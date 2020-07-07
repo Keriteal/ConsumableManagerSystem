@@ -1,7 +1,7 @@
-package Model;
+package model;
 
-import Annotations.SqlTable;
-import Model.Abstract.AbstractUser;
+import annotations.sql.SqlTable;
+import model.Abstract.AbstractUser;
 
 @SqlTable(tableName = "consumables_admins")
 public class AdminBean extends AbstractUser {

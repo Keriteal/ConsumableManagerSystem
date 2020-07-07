@@ -1,10 +1,9 @@
-package DAO;
+package dao;
 
-import Model.ConsumableBean;
-import Model.RecordBean;
-import Model.UserBean;
-import Utils.HikariCpUtils;
-import com.zaxxer.hikari.HikariConfig;
+import model.ConsumableBean;
+import model.RecordBean;
+import model.UserBean;
+import utils.HikariCpUtils;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -12,7 +11,7 @@ import java.sql.Statement;
 
 public class RecordDAO {
     public int apply(ConsumableBean consumable, UserBean user) {
-
+        return 0;
     }
 
     public RecordBean listUnconfirmed() {
@@ -23,5 +22,6 @@ public class RecordDAO {
         } catch (SQLException exception) {
             exception.printStackTrace();
         }
+        return null;
     }
 }

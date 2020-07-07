@@ -1,11 +1,11 @@
-package Model.Abstract;
+package model.Abstract;
 
-import Model.Password;
+import model.Interfaces.IPassword;
 
 public abstract class AbstractUser {
     int id;
     String username;
-    Password password;
+    IPassword IPassword;
 
     public int getId() {
         return id;
@@ -23,11 +23,11 @@ public abstract class AbstractUser {
         this.username = username;
     }
 
-    public Password getPassword() {
-        return password;
+    public IPassword getIPassword() {
+        return IPassword;
     }
 
-    public void setPassword(Password password) {
-        this.password = password;
+    public void setIPassword(IPassword IPassword) {
+        this.IPassword = IPassword;
     }
 }

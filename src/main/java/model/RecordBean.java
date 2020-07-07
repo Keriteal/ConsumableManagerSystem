@@ -1,24 +1,28 @@
-package Model;
+package model;
 
-import Annotations.SqlColumn;
-import Annotations.SqlDateTime;
-import Annotations.SqlInteger;
-import Annotations.SqlTable;
+import annotations.sql.*;
 
 import java.sql.Time;
 
 @SqlTable(tableName = "consumable_record")
 public class RecordBean {
+    public static final int CONDITION_UNCONFIRMED = 0x001;
+    public static final int CONDITION_USER = 0x002;
+    public static final int CONDITION_ID = 0x004;
+
     @SqlColumn(name = "cr_id")
     @SqlInteger
+    @SqlQueryCondition(condition = CONDITION_ID)
     private int id;
 
     @SqlColumn(name = "ca_id")
     @SqlInteger
+    @SqlQueryCondition(condition = CONDITION_UNCONFIRMED)
     private int adminUser;
 
     @SqlColumn(name = "cu_id")
     @SqlInteger
+    @SqlQueryCondition(condition = CONDITION_USER)
     private int applicationUser;
 
     @SqlColumn(name = "cr_application_datetime")

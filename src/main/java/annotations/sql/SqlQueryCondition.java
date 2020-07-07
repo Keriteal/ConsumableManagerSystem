@@ -1,4 +1,5 @@
-package Annotations;
+package annotations.sql;
+
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -7,6 +8,6 @@ import java.lang.annotation.Target;
 
 @Target({ElementType.FIELD})
 @Retention(RetentionPolicy.RUNTIME)
-public @interface SqlColumn {
-    public String name() default "";
+public @interface SqlQueryCondition {
+    int condition() default 0;
 }

@@ -1,6 +1,5 @@
-package Utils;
+package utils;
 
-import java.security.InvalidAlgorithmParameterException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
