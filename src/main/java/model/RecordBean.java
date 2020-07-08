@@ -1,83 +1,41 @@
 package model;
 
 import annotations.sql.*;
+import model.Interfaces.IBean;
 
-import java.sql.Time;
+import java.sql.Timestamp;
 
 @SqlTable(tableName = "consumable_record")
-public class RecordBean {
+public class RecordBean implements IBean {
     public static final int CONDITION_UNCONFIRMED = 0x001;
     public static final int CONDITION_USER = 0x002;
     public static final int CONDITION_ID = 0x004;
 
-    @SqlColumn(name = "cr_id")
+    @SqlColumn("cr_id")
     @SqlInteger
-    @SqlQueryCondition(condition = CONDITION_ID)
+    @SqlQueryCondition(CONDITION_ID)
     private int id;
 
-    @SqlColumn(name = "ca_id")
+    @SqlColumn("ca_id")
     @SqlInteger
-    @SqlQueryCondition(condition = CONDITION_UNCONFIRMED)
+    @SqlQueryCondition(CONDITION_UNCONFIRMED)
     private int adminUser;
 
-    @SqlColumn(name = "cu_id")
+    @SqlColumn("cu_id")
     @SqlInteger
-    @SqlQueryCondition(condition = CONDITION_USER)
+    @SqlQueryCondition(CONDITION_USER)
     private int applicationUser;
 
-    @SqlColumn(name = "cr_application_datetime")
+    @SqlColumn("cr_application_datetime")
     @SqlDateTime
-    private Time applicationTime;
+    private Timestamp applicationTime;
 
-    @SqlColumn(name = "cr_confirmed_datetime")
+    @SqlColumn("cr_confirmed_datetime")
     @SqlDateTime
-    private Time confirmedTime;
+    private Timestamp confirmedTime;
 
-    public RecordBean(int id, int adminUser, int applicationUser, Time applicationTime, Time confirmedTime) {
-        this.id = id;
-        this.adminUser = adminUser;
-        this.applicationUser = applicationUser;
-        this.applicationTime = applicationTime;
-        this.confirmedTime = confirmedTime;
-    }
-
-    public int getId() {
+    @Override
+    public int getIdentity() {
         return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
-
-    public int getAdminUser() {
-        return adminUser;
-    }
-
-    public void setAdminUser(int adminUser) {
-        this.adminUser = adminUser;
-    }
-
-    public int getApplicationUser() {
-        return applicationUser;
-    }
-
-    public void setApplicationUser(int applicationUser) {
-        this.applicationUser = applicationUser;
-    }
-
-    public Time getApplicationTime() {
-        return applicationTime;
-    }
-
-    public void setApplicationTime(Time applicationTime) {
-        this.applicationTime = applicationTime;
-    }
-
-    public Time getConfirmedTime() {
-        return confirmedTime;
-    }
-
-    public void setConfirmedTime(Time confirmedTime) {
-        this.confirmedTime = confirmedTime;
     }
 }

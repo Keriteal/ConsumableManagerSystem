@@ -24,11 +24,11 @@ public class SqlLanguageUtils {
             if(!field.isAnnotationPresent(SqlColumn.class) || !field.isAnnotationPresent(SqlQueryCondition.class)){
                 continue;
             }
-            if(field.getAnnotation(SqlQueryCondition.class).condition() != queryCondition) {
+            if(field.getAnnotation(SqlQueryCondition.class).value() != queryCondition) {
                 continue;
             }
             SqlColumn column = field.getAnnotation(SqlColumn.class);
-            String columnname = column.name();
+            String columnname = column.value();
             String fieldName = field.getName();
             String methodName = "get" + fieldName.substring(0,1).toUpperCase() + fieldName.substring(1);
 
@@ -51,4 +51,6 @@ public class SqlLanguageUtils {
         System.out.println(sb.toString());
         return sb.toString();
     }
+
+
 }
