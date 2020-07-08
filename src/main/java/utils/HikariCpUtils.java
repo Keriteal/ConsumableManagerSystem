@@ -6,6 +6,7 @@ import com.zaxxer.hikari.HikariDataSource;
 import javax.sql.DataSource;
 import java.io.InputStream;
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.Properties;
 
@@ -30,9 +31,5 @@ public class HikariCpUtils {
 
     public static Connection getConnection() throws SQLException {
         return dataSource.getConnection();
-    }
-
-    public static void Close() {
-            dataSource.close();
     }
 }
