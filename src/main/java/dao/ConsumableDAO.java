@@ -21,8 +21,12 @@ public class ConsumableDAO {
             e.printStackTrace();
         } finally {
             try {
-                ps.close();
-                connection.close();
+                if(ps!=null){
+                    ps.close();
+                }
+                if(connection !=null){
+                    connection.close();
+                }
             } catch (SQLException exception) {
                 exception.printStackTrace();
             }
@@ -41,8 +45,12 @@ public class ConsumableDAO {
             sqlException.printStackTrace();
         } finally {
             try {
-                ps.close();
-                connection.close();
+                if(ps!=null){
+                    ps.close();
+                }
+                if(connection !=null){
+                    connection.close();
+                }
             } catch (SQLException e) {
                 e.printStackTrace();
             }
