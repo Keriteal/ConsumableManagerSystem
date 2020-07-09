@@ -1,8 +1,11 @@
 package model;
 
 import annotations.sql.*;
+import com.baidu.bjf.remoting.protobuf.FieldType;
+import com.baidu.bjf.remoting.protobuf.annotation.Protobuf;
 import model.Interfaces.IBean;
 
+import java.sql.Date;
 import java.sql.Timestamp;
 
 @SqlTable(tableName = "consumable_record")
@@ -15,68 +18,33 @@ public class RecordBean implements IBean {
     @SqlColumn("cr_id")
     @SqlInteger
     @SqlQueryCondition(CONDITION_ID)
+    @Protobuf(fieldType = FieldType.UINT32)
     private int id;
 
     @SqlColumn("ca_id")
     @SqlInteger
     @SqlQueryCondition(CONDITION_UNCONFIRMED)
+    @Protobuf(fieldType = FieldType.UINT32)
     private int adminUser;
 
     @SqlColumn("cu_id")
     @SqlInteger
     @SqlQueryCondition(CONDITION_USER)
+    @Protobuf(fieldType = FieldType.UINT32)
     private int applicationUser;
 
     @SqlColumn("cr_application_datetime")
     @SqlDateTime
-    private Timestamp applicationTime;
+    @Protobuf(fieldType = FieldType.DATE)
+    private Date applicationTime;
 
     @SqlColumn("cr_confirmed_datetime")
     @SqlDateTime
-    private Timestamp confirmedTime;
+    @Protobuf(fieldType = FieldType.DATE)
+    private Date confirmedTime;
 
     @Override
     public int getIdentity() {
         return id;
-    }
-
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
-
-    public int getAdminUser() {
-        return adminUser;
-    }
-
-    public void setAdminUser(int adminUser) {
-        this.adminUser = adminUser;
-    }
-
-    public int getApplicationUser() {
-        return applicationUser;
-    }
-
-    public void setApplicationUser(int applicationUser) {
-        this.applicationUser = applicationUser;
-    }
-
-    public Timestamp getApplicationTime() {
-        return applicationTime;
-    }
-
-    public void setApplicationTime(Timestamp applicationTime) {
-        this.applicationTime = applicationTime;
-    }
-
-    public Timestamp getConfirmedTime() {
-        return confirmedTime;
-    }
-
-    public void setConfirmedTime(Timestamp confirmedTime) {
-        this.confirmedTime = confirmedTime;
     }
 }

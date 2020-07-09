@@ -1,8 +1,13 @@
 package model;
 
 import annotations.sql.*;
+import com.baidu.bjf.remoting.protobuf.FieldType;
+import com.baidu.bjf.remoting.protobuf.annotation.Protobuf;
+import com.baidu.bjf.remoting.protobuf.annotation.ProtobufClass;
 import model.Interfaces.IBean;
 import model.Interfaces.IPassword;
+
+import java.util.Date;
 
 @SqlTable(tableName = "consumables_admins")
 public class AdminBean implements IBean {
@@ -11,66 +16,31 @@ public class AdminBean implements IBean {
     @SqlColumn(value = "ca_id")
     @SqlInteger
     @SqlQueryCondition(value = CONDITION_ID)
+    @Protobuf(fieldType = FieldType.UINT32)
     private int id;
 
     @SqlColumn(value = "ca_name")
     @SqlString
+    @Protobuf(fieldType = FieldType.STRING)
     private String name;
 
     @SqlColumn(value = "ca_password")
     @SqlString
-    private IPassword password;
+    @Protobuf(fieldType = FieldType.STRING)
+    private String password;
 
     @SqlColumn(value = "ca_contact")
     @SqlString
+    @Protobuf(fieldType = FieldType.STRING)
     private String contact;
 
     @SqlColumn(value = "ca_login_datetime")
     @SqlDateTime
-    private String login_datetime;
+    @Protobuf(fieldType = FieldType.DATE)
+    private Date login_datetime;
 
     @Override
     public int getIdentity() {
         return this.id;
-    }
-
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public model.Interfaces.IPassword getPassword() {
-        return password;
-    }
-
-    public void setPassword(model.Interfaces.IPassword password) {
-        this.password = password;
-    }
-
-    public String getContact() {
-        return contact;
-    }
-
-    public void setContact(String contact) {
-        this.contact = contact;
-    }
-
-    public String getLogin_datetime() {
-        return login_datetime;
-    }
-
-    public void setLogin_datetime(String login_datetime) {
-        this.login_datetime = login_datetime;
     }
 }

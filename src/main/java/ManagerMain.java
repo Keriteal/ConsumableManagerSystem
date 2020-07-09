@@ -1,3 +1,6 @@
+import com.baidu.bjf.remoting.protobuf.ProtobufIDLGenerator;
+import com.baidu.bjf.remoting.protobuf.annotation.Protobuf;
+import model.ConsumableBean;
 import model.RecordBean;
 import utils.SqlLanguageUtils;
 

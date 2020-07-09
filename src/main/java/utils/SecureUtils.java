@@ -1,9 +1,12 @@
 package utils;
 
+import com.baidu.bjf.remoting.protobuf.Codec;
+import com.baidu.bjf.remoting.protobuf.ProtobufProxy;
+
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
-public class PasswordUtils {
+public class SecureUtils {
     public static String CryptMD5(String pass) {
         if(pass == null || pass.length()==0 ){
             throw new IllegalArgumentException("Password cannot be null or empty");
