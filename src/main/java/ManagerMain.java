@@ -3,9 +3,10 @@ import com.baidu.bjf.remoting.protobuf.annotation.Protobuf;
 import model.ConsumableBean;
 import model.RecordBean;
 import utils.SqlLanguageUtils;
+import utils.SqlStatementUtils;
 
 public class ManagerMain {
     public static void main(String[] args) {
-        SqlLanguageUtils.generateQuery(new RecordBean(), RecordBean.CONDITION_USER);
+        System.out.println(SqlStatementUtils.generateInsert(RecordBean.class));
     }
 }

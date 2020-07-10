@@ -8,36 +8,31 @@ import com.baidu.bjf.remoting.protobuf.annotation.Protobuf;
 
 import java.sql.Timestamp;
 
-@SqlTable(tableName = "consumable_items")
+@SqlTable(tableName = "consumable_items", primaryKey = "ci_id")
 @ProtobufClass
 public class ConsumableBean implements IBean {
     public static final int CONDITION_ID = 0x001;
 
-    @SqlColumn("ci_id")
-    @SqlInteger
+    @SqlColumn(value = "ci_id", columnType = ColumnType.UINT)
     @SqlQueryCondition(CONDITION_ID)
-    @Protobuf(fieldType = FieldType.UINT32, order = 1, required = true)
-    private int id;
+    @Protobuf(fieldType = FieldType.UINT32, required = true)
+    private int id; // 物品id
 
-    @SqlColumn("ci_name")
-    @SqlString
-    @Protobuf(fieldType = FieldType.STRING, order = 2, required = true)
-    private String name;
+    @SqlColumn(value = "ci_name",columnType = ColumnType.STRING)
+    @Protobuf(fieldType = FieldType.STRING, required = true)
+    private String name; // 姓名
 
-    @SqlColumn("ci_stock")
-    @SqlInteger
-    @Protobuf(fieldType = FieldType.UINT32, order = 3, required = true)
-    private int stock;
+    @SqlColumn(value = "ci_stock",columnType = ColumnType.UINT)
+    @Protobuf(fieldType = FieldType.UINT32, required = true)
+    private int stock; // 剩余库存
 
-    @SqlColumn("ci_added_datetime")
-    @SqlDateTime
-    @Protobuf(fieldType = FieldType.DATE, order = 4, required = true)
-    private Timestamp addedTime;
+    @SqlColumn(value = "ci_added_datetime",columnType = ColumnType.DATETIME)
+    @Protobuf(fieldType = FieldType.DATE, required = true)
+    private Timestamp addedTime; // 添加时间
 
-    @SqlColumn("ci_modified_datetime")
-    @SqlDateTime
-    @Protobuf(fieldType = FieldType.DATE, order = 5, required = true)
-    private Timestamp modifiedTime;
+    @SqlColumn(value = "ci_modified_datetime", columnType = ColumnType.DATETIME)
+    @Protobuf(fieldType = FieldType.DATE, required = true)
+    private Timestamp modifiedTime; // 修改时间
 
     @Override
     public int getIdentity() {

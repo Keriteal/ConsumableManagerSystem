@@ -21,12 +21,8 @@ public class ConsumableDAO {
             e.printStackTrace();
         } finally {
             try {
-                if(ps!=null){
-                    ps.close();
-                }
-                if(connection !=null){
-                    connection.close();
-                }
+                ps.close();
+                connection.close();
             } catch (SQLException exception) {
                 exception.printStackTrace();
             }
@@ -41,20 +37,42 @@ public class ConsumableDAO {
         try {
             connection = HikariCpUtils.getConnection();
             ps = connection.prepareStatement(SqlLanguageUtils.generateDelete(deleted));
+            i = ps.executeUpdate();
         } catch (SQLException sqlException) {
             sqlException.printStackTrace();
         } finally {
             try {
-                if(ps!=null){
-                    ps.close();
-                }
-                if(connection !=null){
-                    connection.close();
-                }
+                ps.close();
+                connection.close();
             } catch (SQLException e) {
                 e.printStackTrace();
             }
         }
         return i;
+    }
+
+    public int insert(ConsumableBean consumable) {
+        Connection connection = null;
+        PreparedStatement ps = null;
+        int ret = 0;
+        try {
+            connection = HikariCpUtils.getConnection();
+            //ps = connection.prepareStatement();
+            //ps.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            try{
+                if(ps != null) {
+                    ps.close();
+                }
+                if(connection != null) {
+                    connection.close();
+                }
+            }catch (SQLException exception) {
+                exception.printStackTrace();
+            }
+        }
+        return ret;
     }
 }

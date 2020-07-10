@@ -1,7 +1,6 @@
 package utils;
 
 import annotations.sql.SqlColumn;
-import annotations.sql.SqlPrimaryKey;
 import annotations.sql.SqlQueryCondition;
 import annotations.sql.SqlTable;
 import model.Interfaces.IBean;
@@ -83,7 +82,7 @@ public class SqlLanguageUtils {
         String columnName = clazz.getAnnotation(SqlColumn.class).value();
         sb.append(columnName).append(" WHERE ");
 
-        String pkName = clazz.getAnnotation(SqlPrimaryKey.class).value();
+        String pkName = clazz.getAnnotation(SqlTable.class).primaryKey();
         int pkValue = bean.getIdentity();
 
         sb.append(pkName).append("=").append(pkValue);
@@ -91,4 +90,5 @@ public class SqlLanguageUtils {
         System.out.println(sb.toString());
         return sb.toString();
     }
+
 }
