@@ -1,10 +1,20 @@
 package utils;
 
-import java.util.Map;
-import java.util.UUID;
+import exceptions.LoginFailedException;
+import exceptions.NoSuchUserException;
+import exceptions.PasswordWrongException;
+import protobufmodels.LoginRequest;
+import server.ClientInstance;
 
 public class AuthenticationUtils {
-    static Map<UUID, Integer> userMap = null;
+    public static ClientInstance login(LoginRequest.LoginRequset request) throws NoSuchUserException, PasswordWrongException {
+        ClientInstance instance = new ClientInstance();
+        if(request.getUserType() == LoginRequest.LoginRequset.UserType.USER) {
+            instance.setUserType(ClientInstance.UserType.NORMAL_USER);
+        } else if (request.getUserType() == LoginRequest.LoginRequset.UserType.ADMIN) {
+            instance.setUserType(ClientInstance.UserType.ADMIN_USER);
+        }
 
-
+        return instance;
+    }
 }

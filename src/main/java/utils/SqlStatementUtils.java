@@ -2,6 +2,7 @@ package utils;
 
 import annotations.sql.ColumnType;
 import annotations.sql.SqlColumn;
+import annotations.sql.SqlQueryCondition;
 import annotations.sql.SqlTable;
 import model.Interfaces.IBean;
 
@@ -96,5 +97,26 @@ public class SqlStatementUtils {
         }
         sb.deleteCharAt(sb.length() - 2).append("WHERE ").append(pkName).append("=?");
         return sb.toString();
+    }
+
+    public static String generateQueryCondition(Class<? extends IBean> clazz,int condition) {
+        if(!clazz.isAnnotationPresent(SqlTable.class)) {
+            return null;
+        }
+        StringBuilder sb = new StringBuilder("SELECT ");
+        String tableName = clazz.getAnnotation(sqlTableClass).tableName();
+        String pkName = clazz.getAnnotation(sqlTableClass).primaryKey();
+
+        sb.append(pkName).append("FROM ").append(tableName).append(" WHERE ");
+
+        Field[] fields = clazz.getDeclaredFields();
+        for(Field field: fields) {
+            if(!field.isAnnotationPresent(sqlColumnClass)) {
+                
+            }
+            if((field.getAnnotation(SqlQueryCondition.class).value() & condition) == 0) {
+                continue;
+            }
+        }
     }
 }

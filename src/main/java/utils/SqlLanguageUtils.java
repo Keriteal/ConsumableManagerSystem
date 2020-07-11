@@ -17,7 +17,7 @@ public class SqlLanguageUtils {
         if(!isExist) {
             return null;
         }
-        SqlTable table = (SqlTable)clazz.getAnnotation(SqlTable.class);
+        SqlTable table = clazz.getAnnotation(SqlTable.class);
         String tableName = table.tableName();
         sb.append("SELECT * from ").append(tableName).append(" WHERE 1=1");
         Field[] fields = clazz.getDeclaredFields();
@@ -25,7 +25,7 @@ public class SqlLanguageUtils {
             if(!field.isAnnotationPresent(SqlColumn.class) || !field.isAnnotationPresent(SqlQueryCondition.class)){
                 continue;
             }
-            if(field.getAnnotation(SqlQueryCondition.class).value() != queryCondition) {
+            if((field.getAnnotation(SqlQueryCondition.class).value() & queryCondition) == 0) {
                 continue;
             }
             SqlColumn column = field.getAnnotation(SqlColumn.class);

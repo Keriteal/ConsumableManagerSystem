@@ -7,10 +7,11 @@ import java.sql.*;
 
 @SqlTable(tableName = "consumables_user", primaryKey = "cu_id")
 public class UserBean implements IBean {
-    public static final int CONDITION_ID = 0x001;
+    public static final int CONDITION_ID = 0x1;
+    public static final int CONDITION_LOGIN = 0x2;
 
     @SqlColumn("cu_id")
-    @SqlQueryCondition(value = CONDITION_ID)
+    @SqlQueryCondition(CONDITION_ID | CONDITION_LOGIN)
     private int id;
 
     @SqlColumn("cu_name")
@@ -20,6 +21,7 @@ public class UserBean implements IBean {
     private String contact;
 
     @SqlColumn("cu_password")
+    @SqlQueryCondition(CONDITION_LOGIN)
     private IPassword password;
 
     @SqlColumn("cu_register_time")
