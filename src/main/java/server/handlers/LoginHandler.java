@@ -1,12 +1,14 @@
 package server.handlers;
 
+import consts.HttpStatusCode;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONException;
 import com.alibaba.fastjson.JSONObject;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import dao.UserDAO;
-import exceptions.LoginFailedException;
+import exceptions.NoSuchUserException;
+import exceptions.PasswordWrongException;
 import model.UserBean;
 import model.protobuf.Login.*;
 import org.apache.logging.log4j.LogManager;
@@ -20,113 +22,126 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
+import java.security.NoSuchAlgorithmException;
 
 public class LoginHandler implements HttpHandler {
     private static final Logger logger = LogManager.getLogger();
+    private static final UserDAO userdao = new UserDAO();
 
     @Override
-    public void handle(HttpExchange httpExchange) throws IOException {
-        logger.debug("Login request received");
-        String contentType = httpExchange.getRequestHeaders().getFirst("Content-Type");
-        String accepted = httpExchange.getRequestHeaders().getFirst("Accept");
-
-        logger.debug("Received request in login: Content-Type:" + contentType);
-        logger.debug("Accept:" + accepted);
-
-        if (contentType.contains(ManagerMain.HTTP_CONTENT_TYPE_PROTOBUF)) {
-            //Protobuf协议
-            handleProtobuf(httpExchange);
-        } else if (contentType.contains(ManagerMain.HTTP_CONTENT_TYPE_JSON)) {
-            //Json协议
-            handleJson(httpExchange);
-        } else {
-            httpExchange.sendResponseHeaders(406, 0);
-        }
-    }
-
-    private void handleJson(HttpExchange t) throws IOException {
-        JSONObject requestJson, responseJson;
-        byte[] requestBytes, responseBytes;
-        t.getResponseHeaders().add("Content-Type", "application/json;charset=utf-8");
-        // 接收json，响应json
-        try (InputStream is = t.getRequestBody(); OutputStream os = t.getResponseBody()) {
-            String contentLength = t.getRequestHeaders().getFirst("Content-Length");
-            int length = Integer.parseInt(contentLength); //获取长度
-            byte[] requestData = CodingUtils.streamToByteArray(is, length);
-            if (requestData != null) {
-                String requestStr = new String(requestData, StandardCharsets.UTF_8);
-                logger.debug(requestStr);
-                //解析json
-                requestJson = JSON.parseObject(requestStr);
-                String sUuid = requestJson.getString("UUID");
-                int userId = requestJson.getIntValue("UserID");
-                String password = requestJson.getString("Password");
-                logger.debug("Parsed data: UUID=" + sUuid + ",UserID=" + userId + ",Password=" + password);
-                //构建LoginRequest
-                LoginRequest.Builder builder = LoginRequest.newBuilder();
-                builder.setId(userId);
-                builder.setUuid(sUuid);
-                builder.setPassword(password);
-                //验证LoginRequest
-                ClientInstance instance = AuthenticationUtils.login(builder.build());
-                ManagerMain.clientInstanceMap.put(sUuid, instance);
-                logger.debug("Map = " + ManagerMain.clientInstanceMap);
-                UserBean user = new UserDAO().getUserBean(instance.getId());
-                //构建Response
-            }
-        } catch (JSONException jsonException) {
-            //json解析错误
-            logger.error("Error when parsing json " + jsonException.getMessage());
-            t.sendResponseHeaders(406, 0);
-        } catch (LoginFailedException e) {
-            //登录错误
-            logger.error("Login failed");
-            t.sendResponseHeaders(400, 0);
-        } catch (Exception e) {
-            //其他错误
-            logger.error(e.getMessage());
-            t.sendResponseHeaders(500, 0);
-        } finally {
-            t.close();
-        }
-    }
-
-    private void handleProtobuf(HttpExchange t) throws IOException {
-        t.getResponseHeaders().add("Content-Type", "application/x-protobuf");
-        InputStream is = t.getRequestBody();
-        OutputStream os = t.getResponseBody();
-
-        int length = 0;
-        byte[] respData;
+    public void handle(HttpExchange t) throws IOException {
+        String contentType = t.getRequestHeaders().getFirst("Content-Type");
+        String accepted = t.getRequestHeaders().getFirst("Accept");
+        int length;
         try {
-            //解析请求头
-            String contentLength = t.getRequestHeaders().getFirst("Content-Length");
-            length = Integer.parseInt(contentLength);
-            logger.debug("Length:" + contentLength);
-            //获取请求的数据
-            byte[] requestData = CodingUtils.streamToByteArray(is, length);
-            //解析
-            LoginRequest loginRequest = LoginRequest.parseFrom(requestData);
-            String UUID = loginRequest.getUuid();
-            //处理
-            ClientInstance instance = AuthenticationUtils.login(loginRequest);
-            logger.debug(UUID);
-            ManagerMain.clientInstanceMap.put(UUID, instance);
-        } catch (LoginFailedException f) {
-            //登录失败
-            LoginResponse.Builder response = LoginResponse.newBuilder();
-            response.setResult(LoginResponse.Result.FAILED);
-            respData = response.build().toByteArray();
+            String lengthStr = t.getRequestHeaders().getFirst("Content-Length");
+            length = Integer.parseInt(lengthStr);
+        } catch (Exception ignored) {
+            logger.error("接收到了错误的 Content-Length");
+            t.sendResponseHeaders(411, 0);
+            t.close();
+            return;
+        }
 
-            t.sendResponseHeaders(200, respData.length);
-            os.write(respData);
-        } catch (Exception e) {
-            logger.error(e.getMessage());
-            t.sendResponseHeaders(400, 0);
+        logger.debug("接收到登录请求: Content-Type=" + contentType + ";Accept=" + accepted + ";Content-Length=" + length);
+
+        byte[] responseBytes;
+        LoginResponse.Builder responseProtoBuilder = LoginResponse.newBuilder();
+        OutputStream os = t.getResponseBody();
+        boolean isJson = true;
+
+        try (InputStream is = t.getRequestBody()) {
+            //处理请求
+            LoginRequest requestProto;
+            responseProtoBuilder = LoginResponse.newBuilder();
+            byte[] requestBytes = CodingUtils.streamToByteArray(is, length);
+            if (requestBytes == null) {
+                t.sendResponseHeaders(400, 0);
+                t.close();
+                return;
+            }
+            //获取传输类型
+            if (contentType.contains(ManagerMain.HTTP_CONTENT_TYPE_PROTOBUF)) {
+                isJson = false;
+                requestProto = LoginRequest.parseFrom(requestBytes);
+            } else if (contentType.contains(ManagerMain.HTTP_CONTENT_TYPE_JSON)) {
+                String jsonStr = new String(requestBytes, StandardCharsets.UTF_8);
+                JSONObject jsonObject = JSON.parseObject(jsonStr);
+                requestProto = parseJson(jsonObject);
+            } else {
+                //不支持的类型
+                t.sendResponseHeaders(HttpStatusCode.NOT_ACCEPTABLE, 0);
+                return;
+            }
+            //验证用户信息
+            UserBean userBean = userdao.getUserBean(requestProto.getUsername());
+            if (userBean.getPassword().equals(requestProto.getPassword())) {
+                //密码正确
+                responseProtoBuilder.setResult(LoginResponse.Result.SUCCESS);
+                String secret = AuthenticationUtils.generateSecret(128);
+                logger.debug("为用户" + userBean.getName() + "生成密钥：" + secret);
+                ManagerMain.clientInstanceMap.put(requestProto.getUuid(),
+                        new ClientInstance(userBean.getId(), requestProto.getUserType(), secret));
+                responseProtoBuilder.setSecret(secret);
+            } else {
+                throw new PasswordWrongException(userBean.getName());
+            }
+            if (isJson) {
+                JSONObject response = parseResponse(responseProtoBuilder.build());
+                responseBytes = response.toJSONString().getBytes(StandardCharsets.UTF_8);
+            } else {
+                responseBytes = responseProtoBuilder.build().toByteArray();
+            }
+            //发送结果
+            t.sendResponseHeaders(HttpStatusCode.HTTP_OK, responseBytes.length);
+            os.write(responseBytes);
+        } catch (NoSuchUserException noSuchUserException) {
+            logger.debug(noSuchUserException.getMessage());
+            responseProtoBuilder.setResult(LoginResponse.Result.NO_USER);
+            responseBytes = responseProtoBuilder.build().toByteArray();
+            t.sendResponseHeaders(HttpStatusCode.HTTP_OK, responseBytes.length);
+            os.write(responseBytes);
+        } catch (PasswordWrongException wrongException) {
+            responseProtoBuilder.setResult(LoginResponse.Result.PASSWORD_WRONG);
+            responseBytes = responseProtoBuilder.build().toByteArray();
+            t.sendResponseHeaders(HttpStatusCode.HTTP_OK, responseBytes.length);
+            os.write(responseBytes);
+        } catch (NoSuchAlgorithmException exception) {
+            logger.fatal("AES NOT Exists");
+            t.sendResponseHeaders(HttpStatusCode.INTERNAL_SERVER_ERROR, 0);
+        } catch (JSONException jsonException) {
+            logger.error("Invalid Json");
+        } catch (NullPointerException nullPointerException) {
+            logger.error(nullPointerException.getLocalizedMessage());
+            nullPointerException.printStackTrace();
         } finally {
-            is.close();
             os.close();
             t.close();
         }
+    }
+
+    private LoginRequest parseJson(JSONObject jsonObject) throws JSONException, NullPointerException {
+        LoginRequest.Builder builder = LoginRequest.newBuilder();
+        try {
+            builder.setUuid(jsonObject.getString("uuid"));
+            builder.setPassword(jsonObject.getString("password"));
+            builder.setUsername(jsonObject.getString("user_name"));
+            if (jsonObject.getString("user_type").equals("admin")) {
+                builder.setUserType(LoginRequest.UserType.ADMIN);
+            } else {
+                builder.setUserType(LoginRequest.UserType.USER);
+            }
+        } catch (NullPointerException nullPointerException) {
+            nullPointerException.printStackTrace();
+            throw new JSONException("Null Pointer");
+        }
+        return builder.build();
+    }
+
+    private JSONObject parseResponse(LoginResponse response) {
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("result", response.getResult().getNumber());
+        jsonObject.put("secret", response.getSecret());
+        return jsonObject;
     }
 }

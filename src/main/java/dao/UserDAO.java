@@ -1,12 +1,12 @@
 package dao;
 
+import annotations.sql.SqlTable;
 import exceptions.LoginFailedException;
 import exceptions.NoSuchUserException;
 import model.UserBean;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import utils.HikariCpUtils;
-import utils.SqlLanguageUtils;
 import utils.SqlStatementUtils;
 
 import java.sql.Connection;
@@ -18,8 +18,15 @@ public class UserDAO {
     public static final int LOGIN_FAILED = -1;
 
     private static final Logger logger = LogManager.getLogger(LogManager.ROOT_LOGGER_NAME);
+
     private static final Class<UserBean> UserClass = UserBean.class;
     private static final String QueryString = SqlStatementUtils.generateQuery(UserClass);
+    private static final String QueryGetBean = "SELECT * " +
+            "FROM " + UserClass.getAnnotation(SqlTable.class).tableName() + " " +
+            "WHERE " + UserBean.COLUMN_NAME + "=? ";
+    private static final String InsertSql = "INSERT INTO " + UserClass.getAnnotation(SqlTable.class).tableName() + "(" +
+            UserBean.COLUMN_NAME + "," + UserBean.COLUMN_PASSWORD + "," + UserBean.COLUMN_CONTACT + ") VALUES " +
+            "(?, ?, ?, NOW())";
 
     /*
      * @Author keriteal
@@ -66,24 +73,43 @@ public class UserDAO {
         return ret;
     }
 
-    public UserBean getUserBean(int userId) throws NoSuchUserException {
-        UserBean user = new UserBean();
+    public boolean insert(UserBean user) {
+        boolean ret = false;
         try (Connection connection = HikariCpUtils.getConnection();
-             PreparedStatement ps = connection.prepareStatement(QueryString)) {
-            ps.setInt(1, userId);
-            ResultSet rs = ps.executeQuery();
-            if (rs.next()) {
-                user.setId(rs.getInt("cu_id"));
-                user.setName(rs.getString("cu_name"));
-                user.setPassword(rs.getString("cu_password"));
-                user.setContact(rs.getString("cu_contact"));
-                user.setRegisterTime(rs.getTimestamp("cu_register_time"));
-                user.setLatestLogin(rs.getTimestamp("cu_latest_login"));
-            } else {
-                throw new NoSuchUserException();
+             PreparedStatement ps = connection.prepareStatement(InsertSql)) {
+            logger.debug(InsertSql);
+            ps.setString(1, user.getName());
+            ps.setString(2, user.getPassword());
+            ps.setString(3, user.getContact());
+            if (ps.executeUpdate() == 1) {
+                ret = true;
+                logger.debug("注册成功：" + user.getName() + "," + user.getPassword() + "," + user.getContact());
             }
         } catch (SQLException sqlException) {
-            logger.error(sqlException.getStackTrace());
+            logger.fatal("SQLException occurs：" + sqlException.getSQLState());
+        }
+        return ret;
+    }
+
+    public UserBean getUserBean(String userName) throws NoSuchUserException {
+        UserBean user = new UserBean();
+        try (Connection connection = HikariCpUtils.getConnection();
+             PreparedStatement ps = connection.prepareStatement(QueryGetBean)) {
+            logger.debug(QueryGetBean);
+            ps.setString(1, userName);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                user.setId(rs.getInt(UserBean.COLUMN_ID));
+                user.setName(rs.getString(UserBean.COLUMN_NAME));
+                user.setPassword(rs.getString(UserBean.COLUMN_PASSWORD));
+                user.setContact(rs.getString(UserBean.COLUMN_CONTACT));
+                user.setRegisterTime(rs.getTimestamp(UserBean.COLUMN_REGISTER_TIME));
+                user.setLatestLogin(rs.getTimestamp(UserBean.COLUMN_LOGIN_TIME));
+            } else {
+                throw new NoSuchUserException(userName);
+            }
+        } catch (SQLException sqlException) {
+            logger.error(sqlException.getLocalizedMessage());
         }
         return user;
     }

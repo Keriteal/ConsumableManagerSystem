@@ -4,7 +4,8 @@ option java_package = "model.protobuf";
 
 message RecordRequest{
   string uuid = 1;
-  uint32 consumableId = 2;
+  string secret = 2;
+  uint32 consumableId = 3;
 }
 
 message RecordResponse {

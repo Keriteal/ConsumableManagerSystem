@@ -1,9 +1,10 @@
 package utils;
 
+import java.io.IOException;
 import java.io.InputStream;
 
 public class CodingUtils {
-    public static byte[] streamToByteArray(InputStream ins, int bytesLength) throws Exception {
+    public static byte[] streamToByteArray(InputStream ins, int bytesLength) throws IOException {
 
         byte[] buffer = new byte[bytesLength];
 

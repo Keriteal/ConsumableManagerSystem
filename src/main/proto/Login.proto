@@ -4,7 +4,7 @@ option java_outer_classname = "Login";
 
 message LoginRequest {
   // 登录请求
-  uint32 id = 1;
+  string username = 1;
   string password = 2;
   string uuid = 3;
   UserType userType = 4;
@@ -18,10 +18,11 @@ message LoginRequest {
 message LoginResponse {
   // 登录响应
   Result result = 1;
-  string username = 2; //用于显示欢迎语
+  string secret = 3;
 
   enum Result {
     SUCCESS = 0;
-    FAILED = 1;
+    NO_USER = 1;
+    PASSWORD_WRONG = 2;
   }
 }

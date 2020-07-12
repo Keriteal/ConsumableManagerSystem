@@ -9,11 +9,18 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import server.ClientInstance;
 
+import javax.crypto.KeyGenerator;
+import javax.crypto.SecretKey;
+import javax.xml.bind.DatatypeConverter;
+import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
+
 public class AuthenticationUtils {
     private static final Logger logger = LogManager.getLogger();
     private static final AdminDAO admin = new AdminDAO();
     private static final UserDAO user = new UserDAO();
 
+    /*
     public static ClientInstance login(Login.LoginRequest request) throws LoginFailedException {
         //创建实例
         ClientInstance instance = new ClientInstance();
@@ -31,7 +38,7 @@ public class AuthenticationUtils {
                 UserBean userBean = new UserBean();
                 userBean.setId(request.getId());
                 userBean.setPassword(request.getPassword());
-                logger.debug("Try log in: userid = "+ userBean.getId() + "password=" + userBean.getPassword());
+                logger.debug("Try log in: userid = " + userBean.getId() + "password=" + userBean.getPassword());
                 int result = user.query(userBean, UserBean.CONDITION_LOGIN);
                 if (result == UserDAO.LOGIN_FAILED) {
                     throw new LoginFailedException();
@@ -41,5 +48,18 @@ public class AuthenticationUtils {
                 throw new LoginFailedException();
         }
         return instance;
+    }*/
+
+    public static String generateSecret(int keyLen) throws NoSuchAlgorithmException {
+            KeyGenerator keyGen = KeyGenerator.getInstance("AES");
+            keyGen.init(keyLen);
+            SecretKey secretKey = keyGen.generateKey();
+            byte[] encoded = secretKey.getEncoded();
+            return DatatypeConverter.printHexBinary(encoded).toLowerCase();
+    }
+
+    public static boolean isValidPassword(String password) {
+        // TODO: 验证密码可用性
+        return true;
     }
 }

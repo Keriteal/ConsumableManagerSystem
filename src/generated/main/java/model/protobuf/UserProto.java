@@ -25,12 +25,24 @@ public final class UserProto {
         getUuidBytes();
 
     /**
-     * <code>.UserRequest.Params params = 2;</code>
+     * <code>string secret = 2;</code>
+     * @return The secret.
+     */
+    java.lang.String getSecret();
+    /**
+     * <code>string secret = 2;</code>
+     * @return The bytes for secret.
+     */
+    com.google.protobuf.ByteString
+        getSecretBytes();
+
+    /**
+     * <code>.UserRequest.Params params = 3;</code>
      * @return Whether the params field is set.
      */
     boolean hasParams();
     /**
-     * <code>.UserRequest.Params params = 2;</code>
+     * <code>.UserRequest.Params params = 3;</code>
      * @return The params.
      */
     model.protobuf.UserProto.UserRequest.Params getParams();
@@ -45,6 +57,7 @@ public final class UserProto {
       UserRequestOrBuilder {
     private UserRequest() {
       uuid_ = "";
+      secret_ = "";
     }
     /**
      * Protobuf enum {@code UserRequest.RequestType}
@@ -883,24 +896,71 @@ public final class UserProto {
       
     }
 
-    public static final int PARAMS_FIELD_NUMBER = 2;
+    public static final int SECRET_FIELD_NUMBER = 2;
+    private java.lang.String secret_;
+    /**
+     * <code>string secret = 2;</code>
+     * @return The secret.
+     */
+    @java.lang.Override
+    public java.lang.String getSecret() {
+      return secret_;
+    }
+    /**
+     * <code>string secret = 2;</code>
+     * @return The bytes for secret.
+     */
+    @java.lang.Override
+    public com.google.protobuf.ByteString
+        getSecretBytes() {
+      return com.google.protobuf.ByteString.copyFromUtf8(secret_);
+    }
+    /**
+     * <code>string secret = 2;</code>
+     * @param value The secret to set.
+     */
+    private void setSecret(
+        java.lang.String value) {
+      value.getClass();
+  
+      secret_ = value;
+    }
+    /**
+     * <code>string secret = 2;</code>
+     */
+    private void clearSecret() {
+      
+      secret_ = getDefaultInstance().getSecret();
+    }
+    /**
+     * <code>string secret = 2;</code>
+     * @param value The bytes for secret to set.
+     */
+    private void setSecretBytes(
+        com.google.protobuf.ByteString value) {
+      checkByteStringIsUtf8(value);
+      secret_ = value.toStringUtf8();
+      
+    }
+
+    public static final int PARAMS_FIELD_NUMBER = 3;
     private model.protobuf.UserProto.UserRequest.Params params_;
     /**
-     * <code>.UserRequest.Params params = 2;</code>
+     * <code>.UserRequest.Params params = 3;</code>
      */
     @java.lang.Override
     public boolean hasParams() {
       return params_ != null;
     }
     /**
-     * <code>.UserRequest.Params params = 2;</code>
+     * <code>.UserRequest.Params params = 3;</code>
      */
     @java.lang.Override
     public model.protobuf.UserProto.UserRequest.Params getParams() {
       return params_ == null ? model.protobuf.UserProto.UserRequest.Params.getDefaultInstance() : params_;
     }
     /**
-     * <code>.UserRequest.Params params = 2;</code>
+     * <code>.UserRequest.Params params = 3;</code>
      */
     private void setParams(model.protobuf.UserProto.UserRequest.Params value) {
       value.getClass();
@@ -908,7 +968,7 @@ public final class UserProto {
       
       }
     /**
-     * <code>.UserRequest.Params params = 2;</code>
+     * <code>.UserRequest.Params params = 3;</code>
      */
     @java.lang.SuppressWarnings({"ReferenceEquality"})
     private void mergeParams(model.protobuf.UserProto.UserRequest.Params value) {
@@ -923,7 +983,7 @@ public final class UserProto {
       
     }
     /**
-     * <code>.UserRequest.Params params = 2;</code>
+     * <code>.UserRequest.Params params = 3;</code>
      */
     private void clearParams() {  params_ = null;
       
@@ -1074,21 +1134,70 @@ public final class UserProto {
       }
 
       /**
-       * <code>.UserRequest.Params params = 2;</code>
+       * <code>string secret = 2;</code>
+       * @return The secret.
+       */
+      @java.lang.Override
+      public java.lang.String getSecret() {
+        return instance.getSecret();
+      }
+      /**
+       * <code>string secret = 2;</code>
+       * @return The bytes for secret.
+       */
+      @java.lang.Override
+      public com.google.protobuf.ByteString
+          getSecretBytes() {
+        return instance.getSecretBytes();
+      }
+      /**
+       * <code>string secret = 2;</code>
+       * @param value The secret to set.
+       * @return This builder for chaining.
+       */
+      public Builder setSecret(
+          java.lang.String value) {
+        copyOnWrite();
+        instance.setSecret(value);
+        return this;
+      }
+      /**
+       * <code>string secret = 2;</code>
+       * @return This builder for chaining.
+       */
+      public Builder clearSecret() {
+        copyOnWrite();
+        instance.clearSecret();
+        return this;
+      }
+      /**
+       * <code>string secret = 2;</code>
+       * @param value The bytes for secret to set.
+       * @return This builder for chaining.
+       */
+      public Builder setSecretBytes(
+          com.google.protobuf.ByteString value) {
+        copyOnWrite();
+        instance.setSecretBytes(value);
+        return this;
+      }
+
+      /**
+       * <code>.UserRequest.Params params = 3;</code>
        */
       @java.lang.Override
       public boolean hasParams() {
         return instance.hasParams();
       }
       /**
-       * <code>.UserRequest.Params params = 2;</code>
+       * <code>.UserRequest.Params params = 3;</code>
        */
       @java.lang.Override
       public model.protobuf.UserProto.UserRequest.Params getParams() {
         return instance.getParams();
       }
       /**
-       * <code>.UserRequest.Params params = 2;</code>
+       * <code>.UserRequest.Params params = 3;</code>
        */
       public Builder setParams(model.protobuf.UserProto.UserRequest.Params value) {
         copyOnWrite();
@@ -1096,7 +1205,7 @@ public final class UserProto {
         return this;
         }
       /**
-       * <code>.UserRequest.Params params = 2;</code>
+       * <code>.UserRequest.Params params = 3;</code>
        */
       public Builder setParams(
           model.protobuf.UserProto.UserRequest.Params.Builder builderForValue) {
@@ -1105,7 +1214,7 @@ public final class UserProto {
         return this;
       }
       /**
-       * <code>.UserRequest.Params params = 2;</code>
+       * <code>.UserRequest.Params params = 3;</code>
        */
       public Builder mergeParams(model.protobuf.UserProto.UserRequest.Params value) {
         copyOnWrite();
@@ -1113,7 +1222,7 @@ public final class UserProto {
         return this;
       }
       /**
-       * <code>.UserRequest.Params params = 2;</code>
+       * <code>.UserRequest.Params params = 3;</code>
        */
       public Builder clearParams() {  copyOnWrite();
         instance.clearParams();
@@ -1137,11 +1246,12 @@ public final class UserProto {
         case BUILD_MESSAGE_INFO: {
             java.lang.Object[] objects = new java.lang.Object[] {
               "uuid_",
+              "secret_",
               "params_",
             };
             java.lang.String info =
-                "\u0000\u0002\u0000\u0000\u0001\u0002\u0002\u0000\u0000\u0000\u0001\u0208\u0002\t" +
-                "";
+                "\u0000\u0003\u0000\u0000\u0001\u0003\u0003\u0000\u0000\u0000\u0001\u0208\u0002\u0208" +
+                "\u0003\t";
             return newMessageInfo(DEFAULT_INSTANCE, info, objects);
         }
         // fall through

@@ -6,8 +6,9 @@ import  "google/protobuf/timestamp.proto";
 
 message ConsumableRequest{
   string uuid = 1;
-  RequestType type = 2;
-  Params param = 3;
+  string secret = 2;
+  RequestType type = 3;
+  Params param = 4;
 
   enum RequestType {
     LIST = 0;

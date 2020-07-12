@@ -7,28 +7,36 @@ import java.sql.*;
 
 @SqlTable(tableName = "consumables_user", primaryKey = "cu_id")
 public class UserBean implements IBean {
-    public static final int CONDITION_ID = 0x1;
-    public static final int CONDITION_LOGIN = 0x2;
+    public static final int CONDITION_ID = 1;
+    public static final int CONDITION_LOGIN = 2;
+    public static final int CONDITION_GET_BEAN = 4;
 
-    @SqlColumn("cu_id")
+    public static final String COLUMN_ID = "cu_id";
+    public static final String COLUMN_NAME = "cu_name";
+    public static final String COLUMN_CONTACT = "cu_contact";
+    public static final String COLUMN_PASSWORD = "cu_password";
+    public static final String COLUMN_REGISTER_TIME = "cu_register_time";
+    public static final String COLUMN_LOGIN_TIME = "cu_latest_login";
+
+    @SqlColumn(COLUMN_ID)
     @SqlQueryCondition(CONDITION_ID)
     private int id;
 
-    @SqlColumn("cu_name")
-    @SqlQueryCondition(CONDITION_LOGIN)
+    @SqlColumn(COLUMN_NAME)
+    @SqlQueryCondition(CONDITION_LOGIN | CONDITION_GET_BEAN)
     private String name;
 
-    @SqlColumn("cu_contact")
+    @SqlColumn(COLUMN_CONTACT)
     private String contact;
 
-    @SqlColumn("cu_password")
+    @SqlColumn(COLUMN_PASSWORD)
     @SqlQueryCondition(CONDITION_LOGIN)
     private String password;
 
-    @SqlColumn("cu_register_time")
+    @SqlColumn(COLUMN_REGISTER_TIME)
     private Timestamp registerTime;
 
-    @SqlColumn("cu_latest_login")
+    @SqlColumn(COLUMN_LOGIN_TIME)
     private Timestamp latestLogin;
 
     public int getId() {

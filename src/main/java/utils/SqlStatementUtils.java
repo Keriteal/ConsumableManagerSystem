@@ -34,9 +34,27 @@ public class SqlStatementUtils {
             }
             sb.append(field.getAnnotation(sqlColumnClass).value()).append(", ");
         }
-        sb.delete(sb.length() - 3, sb.length()).append(" FROM ").append(tableName)
+        sb.delete(sb.length() - 2, sb.length()).append(" FROM ").append(tableName)
                 .append(" WHERE ").append(pkName).append("=?");
-        logger.debug(sb.toString());
+        return sb.toString();
+    }
+
+    public static String generateList(Class<? extends IBean> clazz) {
+        StringBuilder sb = new StringBuilder("SELECT ");
+        if(!clazz.isAnnotationPresent(sqlTableClass)) {
+            return null;
+        }
+        String tableName = clazz.getDeclaredAnnotation(sqlTableClass).tableName();
+        String pkName = clazz.getAnnotation(sqlTableClass).primaryKey();
+        Field[] fields = clazz.getDeclaredFields();
+
+        for(Field field : fields) {
+            if (!field.isAnnotationPresent(sqlColumnClass)) {
+                continue;
+            }
+            sb.append(field.getAnnotation(sqlColumnClass).value()).append(", ");
+        }
+        sb.delete(sb.length() - 3, sb.length()).append(" FROM ").append(tableName);
         return sb.toString();
     }
 
@@ -49,9 +67,6 @@ public class SqlStatementUtils {
         String pkName = clazz.getAnnotation(sqlTableClass).primaryKey();
 
         sb.append(tableName).append(" WHERE ").append(pkName).append("=?");
-
-        logger.debug(sb.toString());
-
         return sb.toString();
     }
 
@@ -81,7 +96,6 @@ public class SqlStatementUtils {
             count--;
         }
         sb.deleteCharAt(sb.length() - 2).append(")");
-        logger.debug(sb.toString());
         return sb.toString();
     }
 
@@ -104,8 +118,6 @@ public class SqlStatementUtils {
             sb.append("?, ");
         }
         sb.deleteCharAt(sb.length() - 2).append("WHERE ").append(pkName).append("=?");
-
-        logger.debug(sb.toString());
         return sb.toString();
     }
 
@@ -130,8 +142,7 @@ public class SqlStatementUtils {
             sb.append(field.getAnnotation(sqlColumnClass).value()).append("=");
             sb.append("? AND ");
         }
-        sb.delete(sb.length() - 4, sb.length()).append(";");
-        logger.debug(sb.toString());
+        sb.delete(sb.length() - 5, sb.length()).append(";");
         return sb.toString();
     }
 }
