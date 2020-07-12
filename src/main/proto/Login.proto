@@ -1,0 +1,27 @@
+syntax = "proto3";
+option java_package="model.protobuf";
+option java_outer_classname = "Login";
+
+message LoginRequest {
+  // 登录请求
+  uint32 id = 1;
+  string password = 2;
+  string uuid = 3;
+  UserType userType = 4;
+
+  enum UserType {
+    USER = 0;
+    ADMIN = 1;
+  }
+}
+
+message LoginResponse {
+  // 登录响应
+  Result result = 1;
+  string username = 2; //用于显示欢迎语
+
+  enum Result {
+    SUCCESS = 0;
+    FAILED = 1;
+  }
+}

@@ -1,0 +1,33 @@
+syntax = "proto3";
+import  "google/protobuf/timestamp.proto";
+option java_package = "model.protobuf";
+option java_outer_classname = "UserProto";
+
+message UserRequest{
+  string uuid = 1;
+  Params params = 2;
+
+  enum RequestType {
+    LIST = 0;
+    ADD = 1;
+    DELETE = 2;
+    EDIT = 3;
+    QUERY = 4;
+  }
+  message Params {
+    uint32 userId = 1;
+    string userName = 2;
+    string userContact = 3;
+    google.protobuf.Timestamp userRegisterTime = 4;
+    google.protobuf.Timestamp userLatestLoginTime = 5;
+  }
+}
+
+message UserResponse {
+  Result result = 1;
+
+  enum Result{
+    SUCCESS = 0;
+    FAILED = 1;
+  }
+}

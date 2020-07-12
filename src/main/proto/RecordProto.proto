@@ -1,0 +1,17 @@
+syntax = "proto3";
+option java_outer_classname = "RecordProto";
+option java_package = "model.protobuf";
+
+message RecordRequest{
+  string uuid = 1;
+  uint32 consumableId = 2;
+}
+
+message RecordResponse {
+  Result result = 1;
+
+  enum Result{
+    SUCCESS = 0;
+    FAILED = 1;
+  }
+}

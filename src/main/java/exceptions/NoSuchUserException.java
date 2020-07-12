@@ -1,4 +1,4 @@
 package exceptions;
 
-public class NoSuchUserException extends PasswordWrongException{
+public class NoSuchUserException extends Exception {
 }

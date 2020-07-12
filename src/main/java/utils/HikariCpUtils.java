@@ -11,7 +11,7 @@ import java.sql.SQLException;
 import java.util.Properties;
 
 public class HikariCpUtils {
-    public static HikariDataSource dataSource;
+    public static HikariDataSource dataSource = null;
 
     public static DataSource getDataSource(){
         try {
@@ -30,6 +30,6 @@ public class HikariCpUtils {
     }
 
     public static Connection getConnection() throws SQLException {
-        return dataSource.getConnection();
+        return getDataSource().getConnection();
     }
 }

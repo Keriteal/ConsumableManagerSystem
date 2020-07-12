@@ -1,0 +1,36 @@
+syntax = "proto3";
+option java_outer_classname = "ConsumableProto";
+option java_package = "model.protobuf";
+
+import  "google/protobuf/timestamp.proto";
+
+message ConsumableRequest{
+  string uuid = 1;
+  RequestType type = 2;
+  Params param = 3;
+
+  enum RequestType {
+    LIST = 0;
+    ADD = 1;
+    DELETE = 2;
+    EDIT = 3;
+    QUERY = 4;
+  }
+
+  message Params {
+    uint32 consId = 1;
+    string consName = 2;
+    uint32 consStock = 3;
+    google.protobuf.Timestamp consAddedTime = 4;
+    google.protobuf.Timestamp consModifiedTime = 5;
+  }
+}
+
+message ConsumableResponse {
+  Result result = 1;
+
+  enum Result{
+    SUCCESS = 0;
+    FAILED = 1;
+  }
+}

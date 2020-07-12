@@ -5,50 +5,62 @@ import annotations.sql.SqlColumn;
 import annotations.sql.SqlQueryCondition;
 import annotations.sql.SqlTable;
 import model.Interfaces.IBean;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.lang.reflect.Field;
 
 public class SqlStatementUtils {
+    // PreparedStatement 生成
+    public static final String clazzName = SqlStatementUtils.class.getName();
     private static final Class<SqlTable> sqlTableClass = SqlTable.class;
     private static final Class<SqlColumn> sqlColumnClass = SqlColumn.class;
+    private static final Class<SqlQueryCondition> sqlQueryConditionClass = SqlQueryCondition.class;
+
+    private static final Logger logger = LogManager.getLogger();
 
     public static String generateQuery(Class<? extends IBean> clazz) {
         StringBuilder sb = new StringBuilder("SELECT ");
-        if (!clazz.isAnnotationPresent(SqlTable.class)) {
+        if (!clazz.isAnnotationPresent(sqlTableClass)) {
             return null;
         }
-        String tableName = clazz.getAnnotation(SqlTable.class).tableName();
-        String pkName = clazz.getAnnotation(SqlTable.class).primaryKey();
+        String tableName = clazz.getAnnotation(sqlTableClass).tableName();
+        String pkName = clazz.getAnnotation(sqlTableClass).primaryKey();
         Field[] fields = clazz.getDeclaredFields();
 
         for (Field field : fields) {
-            if (!field.isAnnotationPresent(SqlColumn.class)) {
+            if (!field.isAnnotationPresent(sqlColumnClass)) {
                 continue;
             }
-            sb.append(field.getAnnotation(SqlColumn.class).value()).append(",");
+            sb.append(field.getAnnotation(sqlColumnClass).value()).append(", ");
         }
-        sb.deleteCharAt(sb.length() - 1).append(" FROM ").append(tableName)
+        sb.delete(sb.length() - 3, sb.length()).append(" FROM ").append(tableName)
                 .append(" WHERE ").append(pkName).append("=?");
+        logger.debug(sb.toString());
         return sb.toString();
     }
 
     public static String generateDelete(Class<? extends IBean> clazz) {
         StringBuilder sb = new StringBuilder("DELETE FROM ");
-        if (!clazz.isAnnotationPresent(SqlTable.class)) {
+        if (!clazz.isAnnotationPresent(sqlTableClass)) {
             return null;
         }
-        String tableName = clazz.getAnnotation(SqlTable.class).tableName();
-        String pkName = clazz.getAnnotation(SqlTable.class).primaryKey();
+        String tableName = clazz.getAnnotation(sqlTableClass).tableName();
+        String pkName = clazz.getAnnotation(sqlTableClass).primaryKey();
 
         sb.append(tableName).append(" WHERE ").append(pkName).append("=?");
+
+        logger.debug(sb.toString());
+
         return sb.toString();
     }
 
     public static String generateInsert(Class<? extends IBean> clazz) {
-        StringBuilder sb = new StringBuilder("INSERT INTO ");
         if (!clazz.isAnnotationPresent(sqlTableClass)) {
             return null;
         }
+
+        StringBuilder sb = new StringBuilder("INSERT INTO ");
         String tableName = clazz.getAnnotation(sqlTableClass).tableName();
         String pkName = clazz.getAnnotation(sqlTableClass).primaryKey();
 
@@ -69,11 +81,12 @@ public class SqlStatementUtils {
             count--;
         }
         sb.deleteCharAt(sb.length() - 2).append(")");
+        logger.debug(sb.toString());
         return sb.toString();
     }
 
     public static String generateUpdate(Class<? extends IBean> clazz) {
-        if (!clazz.isAnnotationPresent(SqlTable.class)) {
+        if (!clazz.isAnnotationPresent(sqlTableClass)) {
             return null;
         }
         StringBuilder sb = new StringBuilder("UPDATE ");
@@ -84,39 +97,41 @@ public class SqlStatementUtils {
 
         Field[] fields = clazz.getDeclaredFields();
         for (Field field : fields) {
-            if (!field.isAnnotationPresent(sqlColumnClass)) {
+            if (!field.isAnnotationPresent(sqlColumnClass) || field.getAnnotation(sqlColumnClass).value().equals(pkName)) {
                 continue;
             }
             sb.append(field.getAnnotation(sqlColumnClass).value()).append("=");
-            if (field.getAnnotation(sqlColumnClass).columnType() == ColumnType.UINT ||
-                    field.getAnnotation(sqlColumnClass).columnType() == ColumnType.INT) {
-                sb.append("?, ");
-            } else {
-                sb.append("'?', ");
-            }
+            sb.append("?, ");
         }
         sb.deleteCharAt(sb.length() - 2).append("WHERE ").append(pkName).append("=?");
+
+        logger.debug(sb.toString());
         return sb.toString();
     }
 
-    public static String generateQueryCondition(Class<? extends IBean> clazz,int condition) {
-        if(!clazz.isAnnotationPresent(SqlTable.class)) {
+    public static String generateQueryCondition(Class<? extends IBean> clazz, int condition) {
+        if (!clazz.isAnnotationPresent(sqlTableClass)) {
             return null;
         }
         StringBuilder sb = new StringBuilder("SELECT ");
         String tableName = clazz.getAnnotation(sqlTableClass).tableName();
         String pkName = clazz.getAnnotation(sqlTableClass).primaryKey();
 
-        sb.append(pkName).append("FROM ").append(tableName).append(" WHERE ");
+        sb.append(pkName).append(" FROM ").append(tableName).append(" WHERE ");
 
         Field[] fields = clazz.getDeclaredFields();
-        for(Field field: fields) {
-            if(!field.isAnnotationPresent(sqlColumnClass)) {
-                
-            }
-            if((field.getAnnotation(SqlQueryCondition.class).value() & condition) == 0) {
+        for (Field field : fields) {
+            if (!field.isAnnotationPresent(sqlColumnClass) || !field.isAnnotationPresent(sqlQueryConditionClass)) {
                 continue;
             }
+            if ((field.getAnnotation(sqlQueryConditionClass).value() & condition) == 0) {
+                continue;
+            }
+            sb.append(field.getAnnotation(sqlColumnClass).value()).append("=");
+            sb.append("? AND ");
         }
+        sb.delete(sb.length() - 4, sb.length()).append(";");
+        logger.debug(sb.toString());
+        return sb.toString();
     }
 }

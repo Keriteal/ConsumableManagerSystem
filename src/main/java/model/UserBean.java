@@ -11,10 +11,11 @@ public class UserBean implements IBean {
     public static final int CONDITION_LOGIN = 0x2;
 
     @SqlColumn("cu_id")
-    @SqlQueryCondition(CONDITION_ID | CONDITION_LOGIN)
+    @SqlQueryCondition(CONDITION_ID)
     private int id;
 
     @SqlColumn("cu_name")
+    @SqlQueryCondition(CONDITION_LOGIN)
     private String name;
 
     @SqlColumn("cu_contact")
@@ -22,13 +23,61 @@ public class UserBean implements IBean {
 
     @SqlColumn("cu_password")
     @SqlQueryCondition(CONDITION_LOGIN)
-    private IPassword password;
+    private String password;
 
     @SqlColumn("cu_register_time")
     private Timestamp registerTime;
 
     @SqlColumn("cu_latest_login")
     private Timestamp latestLogin;
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getContact() {
+        return contact;
+    }
+
+    public void setContact(String contact) {
+        this.contact = contact;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public Timestamp getRegisterTime() {
+        return registerTime;
+    }
+
+    public void setRegisterTime(Timestamp registerTime) {
+        this.registerTime = registerTime;
+    }
+
+    public Timestamp getLatestLogin() {
+        return latestLogin;
+    }
+
+    public void setLatestLogin(Timestamp latestLogin) {
+        this.latestLogin = latestLogin;
+    }
 
     @Override
     public int getIdentity() {
