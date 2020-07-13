@@ -1,0 +1,18 @@
+syntax = "proto3";
+option java_outer_classname = "CommitProto";
+option java_package = "model.protobuf";
+
+message CommitRequest{
+  string uuid = 1;
+  string secret = 2;
+  uint32 consumableId = 3;
+}
+
+message CommitResponse {
+  Result result = 1;
+
+  enum Result{
+    SUCCESS = 0;
+    FAILED = 1;
+  }
+}

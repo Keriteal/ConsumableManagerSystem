@@ -11,24 +11,23 @@ message ConsumableRequest{
   Params param = 4;
 
   enum RequestType {
-    LIST = 0;
+    LIST_ALL = 0;
     ADD = 1;
-    DELETE = 2;
     EDIT = 3;
-    QUERY = 4;
-  }
-
-  message Params {
-    uint32 consId = 1;
-    string consName = 2;
-    uint32 consStock = 3;
-    google.protobuf.Timestamp consAddedTime = 4;
-    google.protobuf.Timestamp consModifiedTime = 5;
   }
 }
 
+message Params {
+  uint32 consId = 1; //物品id
+  string consName = 2; //物品名称
+  uint32 consStock = 3; //物品库存
+  google.protobuf.Timestamp consAddedTime = 4;
+  google.protobuf.Timestamp consModifiedTime = 5;
+}
+
 message ConsumableResponse {
-  Result result = 1;
+  Result code = 1;
+  repeated Params result = 2;
 
   enum Result{
     SUCCESS = 0;

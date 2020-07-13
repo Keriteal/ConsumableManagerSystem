@@ -4,7 +4,9 @@ import com.sun.net.httpserver.HttpServer;
 import model.UserBean;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import server.handlers.ConfirmHandler;
+import server.handlers.ItemsHandler;
+import server.handlers.user.CommitHandler;
+import server.handlers.admin.ConfirmHandler;
 import server.handlers.LoginHandler;
 import server.handlers.RegisterHandler;
 import utils.SqlStatementUtils;
@@ -39,6 +41,9 @@ public class ManagerMain {
             server.createContext("/login", new LoginHandler());
             server.createContext("/register", new RegisterHandler());
             server.createContext("/confirm", new ConfirmHandler());
+            server.createContext("/application/commit", new CommitHandler());
+            server.createContext("/application/confirm", new ConfirmHandler());
+            server.createContext("/items", new ItemsHandler());
             server.start();
             System.out.println("Server running");
             while (running) {

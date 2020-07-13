@@ -24,6 +24,7 @@ import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
 import java.security.NoSuchAlgorithmException;
 
+/** uuid, user_name, password, user_type */
 public class LoginHandler implements HttpHandler {
     private static final Logger logger = LogManager.getLogger();
     private static final UserDAO userdao = new UserDAO();
@@ -79,7 +80,7 @@ public class LoginHandler implements HttpHandler {
                 //密码正确
                 responseProtoBuilder.setResult(LoginResponse.Result.SUCCESS);
                 String secret = AuthenticationUtils.generateSecret(128);
-                logger.debug("为用户" + userBean.getName() + "生成密钥：" + secret);
+                logger.debug("为用户 " + userBean.getName() + " 生成密钥：" + secret);
                 ManagerMain.clientInstanceMap.put(requestProto.getUuid(),
                         new ClientInstance(userBean.getId(), requestProto.getUserType(), secret));
                 responseProtoBuilder.setSecret(secret);

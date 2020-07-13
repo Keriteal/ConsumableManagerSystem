@@ -3,16 +3,14 @@ package dao;
 import annotations.sql.SqlTable;
 import exceptions.LoginFailedException;
 import exceptions.NoSuchUserException;
+import exceptions.register.AlreadyHasUserException;
 import model.UserBean;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import utils.HikariCpUtils;
 import utils.SqlStatementUtils;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 
 public class UserDAO {
     public static final int LOGIN_FAILED = -1;
@@ -22,11 +20,13 @@ public class UserDAO {
     private static final Class<UserBean> UserClass = UserBean.class;
     private static final String QueryString = SqlStatementUtils.generateQuery(UserClass);
     private static final String QueryGetBean = "SELECT * " +
-            "FROM " + UserClass.getAnnotation(SqlTable.class).tableName() + " " +
-            "WHERE " + UserBean.COLUMN_NAME + "=? ";
+            "FROM " + UserBean.TABLE_NAME + " " +
+            "WHERE " + UserBean.COLUMN_USER_NAME + "=? ";
     private static final String InsertSql = "INSERT INTO " + UserClass.getAnnotation(SqlTable.class).tableName() + "(" +
-            UserBean.COLUMN_NAME + "," + UserBean.COLUMN_PASSWORD + "," + UserBean.COLUMN_CONTACT + ") VALUES " +
-            "(?, ?, ?, NOW())";
+            UserBean.COLUMN_USER_NAME + "," + UserBean.COLUMN_PASSWORD + "," +
+            UserBean.COLUMN_NAME + "," + UserBean.COLUMN_CONTACT + "," +
+            UserBean.COLUMN_REGISTER_TIME + "," + UserBean.COLUMN_LOGIN_TIME +
+            ") VALUES (?, ?, ?, ?, NOW(), NOW())";
 
     /*
      * @Author keriteal
@@ -73,20 +73,24 @@ public class UserDAO {
         return ret;
     }
 
-    public boolean insert(UserBean user) {
+    public boolean insert(UserBean user) throws AlreadyHasUserException {
         boolean ret = false;
         try (Connection connection = HikariCpUtils.getConnection();
              PreparedStatement ps = connection.prepareStatement(InsertSql)) {
             logger.debug(InsertSql);
-            ps.setString(1, user.getName());
+            ps.setString(1, user.getUsername());
             ps.setString(2, user.getPassword());
-            ps.setString(3, user.getContact());
+            ps.setString(3, user.getName());
+            ps.setString(4, user.getContact());
             if (ps.executeUpdate() == 1) {
                 ret = true;
                 logger.debug("注册成功：" + user.getName() + "," + user.getPassword() + "," + user.getContact());
             }
         } catch (SQLException sqlException) {
-            logger.fatal("SQLException occurs：" + sqlException.getSQLState());
+            logger.fatal("SQLException occurs：" + sqlException.getLocalizedMessage());
+            if (sqlException.getLocalizedMessage().contains("for key 'consumables_user.index_name'")) {
+                throw new AlreadyHasUserException();
+            }
         }
         return ret;
     }
@@ -105,6 +109,11 @@ public class UserDAO {
                 user.setContact(rs.getString(UserBean.COLUMN_CONTACT));
                 user.setRegisterTime(rs.getTimestamp(UserBean.COLUMN_REGISTER_TIME));
                 user.setLatestLogin(rs.getTimestamp(UserBean.COLUMN_LOGIN_TIME));
+                connection.createStatement().executeUpdate(
+                        "UPDATE " + UserBean.TABLE_NAME + " SET " +
+                                UserBean.COLUMN_LOGIN_TIME + "=NOW() " +
+                                "WHERE " + UserBean.COLUMN_ID + "=" + user.getId()
+                );
             } else {
                 throw new NoSuchUserException(userName);
             }

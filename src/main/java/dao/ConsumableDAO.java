@@ -1,78 +1,77 @@
 package dao;
 
 import model.ConsumableBean;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import utils.HikariCpUtils;
 import utils.SqlLanguageUtils;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
 public class ConsumableDAO {
+    private static final Logger logger = LogManager.getLogger();
+
+    private static final String SqlList = "SELECT * FROM " + ConsumableBean.TABLE_NAME;
+    private static final String SqlAdd = "INSERT INTO " + ConsumableBean.TABLE_NAME + "(" +
+            ConsumableBean.COLUMN_NAME + "," + ConsumableBean.COLUMN_STOCK + "," +
+            ConsumableBean.COLUMN_TIME_ADD + ",) " +
+            "VALUES (?,?,NOW())";
+    private static final String SqlEdit = "UPDATE " + ConsumableBean.TABLE_NAME +
+            "SET " + ConsumableBean.COLUMN_NAME + "=? " + ConsumableBean.COLUMN_STOCK + "=?" +
+            ConsumableBean.COLUMN_TIME_MODIFIED + "=NOW() " +
+            "WHERE " + ConsumableBean.COLUMN_ID + "=?";
+
+
     public ArrayList<ConsumableBean> listAll() {
-        Connection connection = null;
-        PreparedStatement ps = null;
         ArrayList<ConsumableBean> list = new ArrayList<>();
-        try {
-            connection = HikariCpUtils.getConnection();
-            ps = connection.prepareStatement(SqlLanguageUtils.generateQueryAll(ConsumableBean.class));
+        try (Connection connection = HikariCpUtils.getConnection();
+             PreparedStatement ps = connection.prepareStatement(SqlList)) {
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                ConsumableBean bean = new ConsumableBean();
+                bean.setId(rs.getInt(ConsumableBean.COLUMN_ID));
+                bean.setStock(rs.getInt(ConsumableBean.COLUMN_STOCK));
+                bean.setName(rs.getString(ConsumableBean.COLUMN_NAME));
+                bean.setAddedTime(rs.getTimestamp(ConsumableBean.COLUMN_TIME_ADD));
+                bean.setModifiedTime(rs.getTimestamp(ConsumableBean.COLUMN_TIME_MODIFIED));
+                list.add(bean);
+            }
         } catch (SQLException e) {
             e.printStackTrace();
-        } finally {
-            try {
-                ps.close();
-                connection.close();
-            } catch (SQLException exception) {
-                exception.printStackTrace();
-            }
         }
         return list;
     }
 
-    public int delete(ConsumableBean deleted) {
-        Connection connection = null;
-        PreparedStatement ps = null;
-        int i = 0;
-        try {
-            connection = HikariCpUtils.getConnection();
-            ps = connection.prepareStatement(SqlLanguageUtils.generateDelete(deleted));
-            i = ps.executeUpdate();
-        } catch (SQLException sqlException) {
-            sqlException.printStackTrace();
-        } finally {
-            try {
-                ps.close();
-                connection.close();
-            } catch (SQLException e) {
-                e.printStackTrace();
+    public boolean insert(ConsumableBean consumable) {
+        try (Connection connection = HikariCpUtils.getConnection();
+             PreparedStatement ps = connection.prepareStatement(SqlAdd)) {
+            ps.setString(1, consumable.getName());
+            ps.setInt(2, consumable.getStock());
+            if (ps.executeUpdate() == 1) {
+                return true;
             }
+        } catch (SQLException e) {
+            logger.debug(e.getMessage());
         }
-        return i;
+        return false;
     }
 
-    public int insert(ConsumableBean consumable) {
-        Connection connection = null;
-        PreparedStatement ps = null;
-        int ret = 0;
-        try {
-            connection = HikariCpUtils.getConnection();
-            //ps = connection.prepareStatement();
-            //ps.executeUpdate();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        } finally {
-            try{
-                if(ps != null) {
-                    ps.close();
-                }
-                if(connection != null) {
-                    connection.close();
-                }
-            }catch (SQLException exception) {
-                exception.printStackTrace();
+    public boolean edit(ConsumableBean consumable) {
+        try (Connection connection = HikariCpUtils.getConnection();
+             PreparedStatement ps = connection.prepareStatement(SqlEdit)) {
+            ps.setString(1, consumable.getName());
+            ps.setInt(2, consumable.getStock());
+            ps.setInt(3, consumable.getId());
+            if (ps.executeUpdate() == 1) {
+                return true;
             }
+        } catch (SQLException e) {
+            logger.debug(e.getMessage());
         }
-        return ret;
+        return false;
     }
 }

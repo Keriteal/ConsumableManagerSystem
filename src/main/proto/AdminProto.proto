@@ -1,0 +1,26 @@
+syntax = "proto3";
+import  "google/protobuf/timestamp.proto";
+option java_package = "model.protobuf";
+option java_outer_classname = "AdminProto";
+
+message AdminRequest{
+  string uuid = 1;
+  string secret = 2;
+}
+
+message AdminResponse {
+  Result result = 1;
+  repeated userInfo adminInfo = 2;
+
+  enum Result{
+    SUCCESS = 0;
+    FAILED = 1;
+  }
+}
+
+message userInfo {
+  uint32 adminId = 1;
+  string adminName = 2;
+  string adminContact = 3;
+  google.protobuf.Timestamp userLatestLoginTime = 5;
+}

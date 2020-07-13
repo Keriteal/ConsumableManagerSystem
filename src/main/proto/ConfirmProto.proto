@@ -1,14 +1,14 @@
 syntax = "proto3";
-option java_outer_classname = "RecordProto";
+option java_outer_classname = "ConfirmProto";
 option java_package = "model.protobuf";
 
-message RecordRequest{
+message ConfirmRequest{
   string uuid = 1;
   string secret = 2;
-  uint32 consumableId = 3;
+  uint32 recordId = 3;
 }
 
-message RecordResponse {
+message ConfirmResponse {
   Result result = 1;
 
   enum Result{

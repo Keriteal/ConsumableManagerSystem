@@ -5,16 +5,21 @@ import model.Interfaces.IBean;
 import model.Interfaces.IPassword;
 import java.sql.*;
 
-@SqlTable(tableName = "consumables_user", primaryKey = "cu_id")
+import static model.UserBean.COLUMN_ID;
+
+@SqlTable(tableName = UserBean.TABLE_NAME, primaryKey = COLUMN_ID)
 public class UserBean implements IBean {
     public static final int CONDITION_ID = 1;
     public static final int CONDITION_LOGIN = 2;
     public static final int CONDITION_GET_BEAN = 4;
 
+    public static final String TABLE_NAME = "consumables_user";
+
     public static final String COLUMN_ID = "cu_id";
+    public static final String COLUMN_USER_NAME = "cu_user_name";
+    public static final String COLUMN_PASSWORD = "cu_password";
     public static final String COLUMN_NAME = "cu_name";
     public static final String COLUMN_CONTACT = "cu_contact";
-    public static final String COLUMN_PASSWORD = "cu_password";
     public static final String COLUMN_REGISTER_TIME = "cu_register_time";
     public static final String COLUMN_LOGIN_TIME = "cu_latest_login";
 
@@ -22,16 +27,20 @@ public class UserBean implements IBean {
     @SqlQueryCondition(CONDITION_ID)
     private int id;
 
-    @SqlColumn(COLUMN_NAME)
-    @SqlQueryCondition(CONDITION_LOGIN | CONDITION_GET_BEAN)
-    private String name;
-
-    @SqlColumn(COLUMN_CONTACT)
-    private String contact;
+    @SqlColumn(COLUMN_USER_NAME)
+    @SqlQueryCondition(CONDITION_LOGIN)
+    private String username;
 
     @SqlColumn(COLUMN_PASSWORD)
     @SqlQueryCondition(CONDITION_LOGIN)
     private String password;
+
+    @SqlColumn(COLUMN_NAME)
+    @SqlQueryCondition(CONDITION_GET_BEAN)
+    private String name;
+
+    @SqlColumn(COLUMN_CONTACT)
+    private String contact;
 
     @SqlColumn(COLUMN_REGISTER_TIME)
     private Timestamp registerTime;
@@ -85,6 +94,14 @@ public class UserBean implements IBean {
 
     public void setLatestLogin(Timestamp latestLogin) {
         this.latestLogin = latestLogin;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
     }
 
     @Override

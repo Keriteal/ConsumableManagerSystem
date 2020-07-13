@@ -45,24 +45,36 @@ public final class RegisterProto {
         getPasswordBytes();
 
     /**
-     * <code>string contact = 3;</code>
+     * <code>string name = 3;</code>
+     * @return The name.
+     */
+    java.lang.String getName();
+    /**
+     * <code>string name = 3;</code>
+     * @return The bytes for name.
+     */
+    com.google.protobuf.ByteString
+        getNameBytes();
+
+    /**
+     * <code>string contact = 4;</code>
      * @return The contact.
      */
     java.lang.String getContact();
     /**
-     * <code>string contact = 3;</code>
+     * <code>string contact = 4;</code>
      * @return The bytes for contact.
      */
     com.google.protobuf.ByteString
         getContactBytes();
 
     /**
-     * <code>string uuid = 4;</code>
+     * <code>string uuid = 5;</code>
      * @return The uuid.
      */
     java.lang.String getUuid();
     /**
-     * <code>string uuid = 4;</code>
+     * <code>string uuid = 5;</code>
      * @return The bytes for uuid.
      */
     com.google.protobuf.ByteString
@@ -79,6 +91,7 @@ public final class RegisterProto {
     private RegisterRequest() {
       username_ = "";
       password_ = "";
+      name_ = "";
       contact_ = "";
       uuid_ = "";
     }
@@ -196,10 +209,57 @@ public final class RegisterProto {
       
     }
 
-    public static final int CONTACT_FIELD_NUMBER = 3;
+    public static final int NAME_FIELD_NUMBER = 3;
+    private java.lang.String name_;
+    /**
+     * <code>string name = 3;</code>
+     * @return The name.
+     */
+    @java.lang.Override
+    public java.lang.String getName() {
+      return name_;
+    }
+    /**
+     * <code>string name = 3;</code>
+     * @return The bytes for name.
+     */
+    @java.lang.Override
+    public com.google.protobuf.ByteString
+        getNameBytes() {
+      return com.google.protobuf.ByteString.copyFromUtf8(name_);
+    }
+    /**
+     * <code>string name = 3;</code>
+     * @param value The name to set.
+     */
+    private void setName(
+        java.lang.String value) {
+      value.getClass();
+  
+      name_ = value;
+    }
+    /**
+     * <code>string name = 3;</code>
+     */
+    private void clearName() {
+      
+      name_ = getDefaultInstance().getName();
+    }
+    /**
+     * <code>string name = 3;</code>
+     * @param value The bytes for name to set.
+     */
+    private void setNameBytes(
+        com.google.protobuf.ByteString value) {
+      checkByteStringIsUtf8(value);
+      name_ = value.toStringUtf8();
+      
+    }
+
+    public static final int CONTACT_FIELD_NUMBER = 4;
     private java.lang.String contact_;
     /**
-     * <code>string contact = 3;</code>
+     * <code>string contact = 4;</code>
      * @return The contact.
      */
     @java.lang.Override
@@ -207,7 +267,7 @@ public final class RegisterProto {
       return contact_;
     }
     /**
-     * <code>string contact = 3;</code>
+     * <code>string contact = 4;</code>
      * @return The bytes for contact.
      */
     @java.lang.Override
@@ -216,7 +276,7 @@ public final class RegisterProto {
       return com.google.protobuf.ByteString.copyFromUtf8(contact_);
     }
     /**
-     * <code>string contact = 3;</code>
+     * <code>string contact = 4;</code>
      * @param value The contact to set.
      */
     private void setContact(
@@ -226,14 +286,14 @@ public final class RegisterProto {
       contact_ = value;
     }
     /**
-     * <code>string contact = 3;</code>
+     * <code>string contact = 4;</code>
      */
     private void clearContact() {
       
       contact_ = getDefaultInstance().getContact();
     }
     /**
-     * <code>string contact = 3;</code>
+     * <code>string contact = 4;</code>
      * @param value The bytes for contact to set.
      */
     private void setContactBytes(
@@ -243,10 +303,10 @@ public final class RegisterProto {
       
     }
 
-    public static final int UUID_FIELD_NUMBER = 4;
+    public static final int UUID_FIELD_NUMBER = 5;
     private java.lang.String uuid_;
     /**
-     * <code>string uuid = 4;</code>
+     * <code>string uuid = 5;</code>
      * @return The uuid.
      */
     @java.lang.Override
@@ -254,7 +314,7 @@ public final class RegisterProto {
       return uuid_;
     }
     /**
-     * <code>string uuid = 4;</code>
+     * <code>string uuid = 5;</code>
      * @return The bytes for uuid.
      */
     @java.lang.Override
@@ -263,7 +323,7 @@ public final class RegisterProto {
       return com.google.protobuf.ByteString.copyFromUtf8(uuid_);
     }
     /**
-     * <code>string uuid = 4;</code>
+     * <code>string uuid = 5;</code>
      * @param value The uuid to set.
      */
     private void setUuid(
@@ -273,14 +333,14 @@ public final class RegisterProto {
       uuid_ = value;
     }
     /**
-     * <code>string uuid = 4;</code>
+     * <code>string uuid = 5;</code>
      */
     private void clearUuid() {
       
       uuid_ = getDefaultInstance().getUuid();
     }
     /**
-     * <code>string uuid = 4;</code>
+     * <code>string uuid = 5;</code>
      * @param value The bytes for uuid to set.
      */
     private void setUuidBytes(
@@ -504,7 +564,56 @@ public final class RegisterProto {
       }
 
       /**
-       * <code>string contact = 3;</code>
+       * <code>string name = 3;</code>
+       * @return The name.
+       */
+      @java.lang.Override
+      public java.lang.String getName() {
+        return instance.getName();
+      }
+      /**
+       * <code>string name = 3;</code>
+       * @return The bytes for name.
+       */
+      @java.lang.Override
+      public com.google.protobuf.ByteString
+          getNameBytes() {
+        return instance.getNameBytes();
+      }
+      /**
+       * <code>string name = 3;</code>
+       * @param value The name to set.
+       * @return This builder for chaining.
+       */
+      public Builder setName(
+          java.lang.String value) {
+        copyOnWrite();
+        instance.setName(value);
+        return this;
+      }
+      /**
+       * <code>string name = 3;</code>
+       * @return This builder for chaining.
+       */
+      public Builder clearName() {
+        copyOnWrite();
+        instance.clearName();
+        return this;
+      }
+      /**
+       * <code>string name = 3;</code>
+       * @param value The bytes for name to set.
+       * @return This builder for chaining.
+       */
+      public Builder setNameBytes(
+          com.google.protobuf.ByteString value) {
+        copyOnWrite();
+        instance.setNameBytes(value);
+        return this;
+      }
+
+      /**
+       * <code>string contact = 4;</code>
        * @return The contact.
        */
       @java.lang.Override
@@ -512,7 +621,7 @@ public final class RegisterProto {
         return instance.getContact();
       }
       /**
-       * <code>string contact = 3;</code>
+       * <code>string contact = 4;</code>
        * @return The bytes for contact.
        */
       @java.lang.Override
@@ -521,7 +630,7 @@ public final class RegisterProto {
         return instance.getContactBytes();
       }
       /**
-       * <code>string contact = 3;</code>
+       * <code>string contact = 4;</code>
        * @param value The contact to set.
        * @return This builder for chaining.
        */
@@ -532,7 +641,7 @@ public final class RegisterProto {
         return this;
       }
       /**
-       * <code>string contact = 3;</code>
+       * <code>string contact = 4;</code>
        * @return This builder for chaining.
        */
       public Builder clearContact() {
@@ -541,7 +650,7 @@ public final class RegisterProto {
         return this;
       }
       /**
-       * <code>string contact = 3;</code>
+       * <code>string contact = 4;</code>
        * @param value The bytes for contact to set.
        * @return This builder for chaining.
        */
@@ -553,7 +662,7 @@ public final class RegisterProto {
       }
 
       /**
-       * <code>string uuid = 4;</code>
+       * <code>string uuid = 5;</code>
        * @return The uuid.
        */
       @java.lang.Override
@@ -561,7 +670,7 @@ public final class RegisterProto {
         return instance.getUuid();
       }
       /**
-       * <code>string uuid = 4;</code>
+       * <code>string uuid = 5;</code>
        * @return The bytes for uuid.
        */
       @java.lang.Override
@@ -570,7 +679,7 @@ public final class RegisterProto {
         return instance.getUuidBytes();
       }
       /**
-       * <code>string uuid = 4;</code>
+       * <code>string uuid = 5;</code>
        * @param value The uuid to set.
        * @return This builder for chaining.
        */
@@ -581,7 +690,7 @@ public final class RegisterProto {
         return this;
       }
       /**
-       * <code>string uuid = 4;</code>
+       * <code>string uuid = 5;</code>
        * @return This builder for chaining.
        */
       public Builder clearUuid() {
@@ -590,7 +699,7 @@ public final class RegisterProto {
         return this;
       }
       /**
-       * <code>string uuid = 4;</code>
+       * <code>string uuid = 5;</code>
        * @param value The bytes for uuid to set.
        * @return This builder for chaining.
        */
@@ -619,12 +728,13 @@ public final class RegisterProto {
             java.lang.Object[] objects = new java.lang.Object[] {
               "username_",
               "password_",
+              "name_",
               "contact_",
               "uuid_",
             };
             java.lang.String info =
-                "\u0000\u0004\u0000\u0000\u0001\u0004\u0004\u0000\u0000\u0000\u0001\u0208\u0002\u0208" +
-                "\u0003\u0208\u0004\u0208";
+                "\u0000\u0005\u0000\u0000\u0001\u0005\u0005\u0000\u0000\u0000\u0001\u0208\u0002\u0208" +
+                "\u0003\u0208\u0004\u0208\u0005\u0208";
             return newMessageInfo(DEFAULT_INSTANCE, info, objects);
         }
         // fall through
@@ -682,6 +792,17 @@ public final class RegisterProto {
   public interface RegisterResponseOrBuilder extends
       // @@protoc_insertion_point(interface_extends:RegisterResponse)
       com.google.protobuf.MessageLiteOrBuilder {
+
+    /**
+     * <code>.RegisterResponse.Result result = 1;</code>
+     * @return The enum numeric value on the wire for result.
+     */
+    int getResultValue();
+    /**
+     * <code>.RegisterResponse.Result result = 1;</code>
+     * @return The result.
+     */
+    model.protobuf.RegisterProto.RegisterResponse.Result getResult();
   }
   /**
    * Protobuf type {@code RegisterResponse}
@@ -703,32 +824,48 @@ public final class RegisterProto {
     public enum Result
         implements com.google.protobuf.Internal.EnumLite {
       /**
-       * <code>FATAL = 0;</code>
+       * <code>SUCCESS = 0;</code>
        */
-      FATAL(0),
+      SUCCESS(0),
       /**
+       * <pre>
+       *已经有了某个用户
+       * </pre>
+       *
        * <code>REPEAT = 1;</code>
        */
       REPEAT(1),
       /**
-       * <code>SUCCESS = 2;</code>
+       * <code>INVALID_PASSWORD = 2;</code>
        */
-      SUCCESS(2),
+      INVALID_PASSWORD(2),
+      /**
+       * <code>INVALID_USERNAME = 3;</code>
+       */
+      INVALID_USERNAME(3),
       UNRECOGNIZED(-1),
       ;
 
       /**
-       * <code>FATAL = 0;</code>
+       * <code>SUCCESS = 0;</code>
        */
-      public static final int FATAL_VALUE = 0;
+      public static final int SUCCESS_VALUE = 0;
       /**
+       * <pre>
+       *已经有了某个用户
+       * </pre>
+       *
        * <code>REPEAT = 1;</code>
        */
       public static final int REPEAT_VALUE = 1;
       /**
-       * <code>SUCCESS = 2;</code>
+       * <code>INVALID_PASSWORD = 2;</code>
        */
-      public static final int SUCCESS_VALUE = 2;
+      public static final int INVALID_PASSWORD_VALUE = 2;
+      /**
+       * <code>INVALID_USERNAME = 3;</code>
+       */
+      public static final int INVALID_USERNAME_VALUE = 3;
 
 
       @java.lang.Override
@@ -752,9 +889,10 @@ public final class RegisterProto {
 
       public static Result forNumber(int value) {
         switch (value) {
-          case 0: return FATAL;
+          case 0: return SUCCESS;
           case 1: return REPEAT;
-          case 2: return SUCCESS;
+          case 2: return INVALID_PASSWORD;
+          case 3: return INVALID_USERNAME;
           default: return null;
         }
       }
@@ -793,6 +931,48 @@ public final class RegisterProto {
       }
 
       // @@protoc_insertion_point(enum_scope:RegisterResponse.Result)
+    }
+
+    public static final int RESULT_FIELD_NUMBER = 1;
+    private int result_;
+    /**
+     * <code>.RegisterResponse.Result result = 1;</code>
+     * @return The enum numeric value on the wire for result.
+     */
+    @java.lang.Override
+    public int getResultValue() {
+      return result_;
+    }
+    /**
+     * <code>.RegisterResponse.Result result = 1;</code>
+     * @return The result.
+     */
+    @java.lang.Override
+    public model.protobuf.RegisterProto.RegisterResponse.Result getResult() {
+      model.protobuf.RegisterProto.RegisterResponse.Result result = model.protobuf.RegisterProto.RegisterResponse.Result.forNumber(result_);
+      return result == null ? model.protobuf.RegisterProto.RegisterResponse.Result.UNRECOGNIZED : result;
+    }
+    /**
+     * <code>.RegisterResponse.Result result = 1;</code>
+     * @param value The enum numeric value on the wire for result to set.
+     */
+    private void setResultValue(int value) {
+        result_ = value;
+    }
+    /**
+     * <code>.RegisterResponse.Result result = 1;</code>
+     * @param value The result to set.
+     */
+    private void setResult(model.protobuf.RegisterProto.RegisterResponse.Result value) {
+      result_ = value.getNumber();
+      
+    }
+    /**
+     * <code>.RegisterResponse.Result result = 1;</code>
+     */
+    private void clearResult() {
+      
+      result_ = 0;
     }
 
     public static model.protobuf.RegisterProto.RegisterResponse parseFrom(
@@ -890,6 +1070,52 @@ public final class RegisterProto {
       }
 
 
+      /**
+       * <code>.RegisterResponse.Result result = 1;</code>
+       * @return The enum numeric value on the wire for result.
+       */
+      @java.lang.Override
+      public int getResultValue() {
+        return instance.getResultValue();
+      }
+      /**
+       * <code>.RegisterResponse.Result result = 1;</code>
+       * @param value The result to set.
+       * @return This builder for chaining.
+       */
+      public Builder setResultValue(int value) {
+        copyOnWrite();
+        instance.setResultValue(value);
+        return this;
+      }
+      /**
+       * <code>.RegisterResponse.Result result = 1;</code>
+       * @return The result.
+       */
+      @java.lang.Override
+      public model.protobuf.RegisterProto.RegisterResponse.Result getResult() {
+        return instance.getResult();
+      }
+      /**
+       * <code>.RegisterResponse.Result result = 1;</code>
+       * @param value The enum numeric value on the wire for result to set.
+       * @return This builder for chaining.
+       */
+      public Builder setResult(model.protobuf.RegisterProto.RegisterResponse.Result value) {
+        copyOnWrite();
+        instance.setResult(value);
+        return this;
+      }
+      /**
+       * <code>.RegisterResponse.Result result = 1;</code>
+       * @return This builder for chaining.
+       */
+      public Builder clearResult() {
+        copyOnWrite();
+        instance.clearResult();
+        return this;
+      }
+
       // @@protoc_insertion_point(builder_scope:RegisterResponse)
     }
     @java.lang.Override
@@ -905,8 +1131,11 @@ public final class RegisterProto {
           return new Builder();
         }
         case BUILD_MESSAGE_INFO: {
-            java.lang.Object[] objects = null;java.lang.String info =
-                "\u0000\u0000";
+            java.lang.Object[] objects = new java.lang.Object[] {
+              "result_",
+            };
+            java.lang.String info =
+                "\u0000\u0001\u0000\u0000\u0001\u0001\u0001\u0000\u0000\u0000\u0001\f";
             return newMessageInfo(DEFAULT_INSTANCE, info, objects);
         }
         // fall through
