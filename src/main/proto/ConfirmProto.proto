@@ -1,7 +1,9 @@
 syntax = "proto3";
+
 option java_outer_classname = "ConfirmProto";
 option java_package = "model.protobuf";
 
+//提交审核
 message ConfirmRequest{
   string uuid = 1;
   string secret = 2;

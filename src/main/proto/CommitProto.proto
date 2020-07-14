@@ -1,7 +1,9 @@
 syntax = "proto3";
+
 option java_outer_classname = "CommitProto";
 option java_package = "model.protobuf";
 
+//提交申请
 message CommitRequest{
   string uuid = 1;
   string secret = 2;

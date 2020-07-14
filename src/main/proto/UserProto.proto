@@ -3,29 +3,30 @@ import  "google/protobuf/timestamp.proto";
 option java_package = "model.protobuf";
 option java_outer_classname = "UserProto";
 
+//用户的增删改查
 message UserRequest{
   string uuid = 1;
   string secret = 2;
-  Params params = 3;
+  UserParams params = 3;
 
   enum RequestType {
     LIST = 0;
     ADD = 1;
-    DELETE = 2;
-    EDIT = 3;
-    QUERY = 4;
+    EDIT = 2;
   }
-  message Params {
-    uint32 userId = 1;
-    string userName = 2;
-    string userContact = 3;
-    google.protobuf.Timestamp userRegisterTime = 4;
-    google.protobuf.Timestamp userLatestLoginTime = 5;
-  }
+}
+
+message UserParams {
+  uint32 userId = 1;
+  string userName = 2;
+  string userContact = 3;
+  google.protobuf.Timestamp userRegisterTime = 4;
+  google.protobuf.Timestamp userLatestLoginTime = 5;
 }
 
 message UserResponse {
   Result result = 1;
+  repeated UserParams userList= 2;
 
   enum Result{
     SUCCESS = 0;
