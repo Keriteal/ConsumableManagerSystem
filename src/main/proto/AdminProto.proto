@@ -10,7 +10,7 @@ message AdminRequest{
 
 message AdminResponse {
   Result result = 1;
-  repeated userInfo adminInfo = 2;
+  repeated UserInfo adminList = 2;
 
   enum Result{
     SUCCESS = 0;
@@ -18,7 +18,7 @@ message AdminResponse {
   }
 }
 
-message userInfo {
+message UserInfo {
   uint32 adminId = 1;
   string adminName = 2;
   string adminContact = 3;
