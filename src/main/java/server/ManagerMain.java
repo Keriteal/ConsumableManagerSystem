@@ -5,6 +5,7 @@ import model.UserBean;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import server.handlers.ItemsHandler;
+import server.handlers.ListAdminHandler;
 import server.handlers.user.CommitHandler;
 import server.handlers.admin.ConfirmHandler;
 import server.handlers.LoginHandler;
@@ -35,7 +36,7 @@ public class ManagerMain {
         try {
             server = HttpServer.create(sa, 0);
         } catch (IOException e) {
-            logger.error("Server creating failed: " + e.getMessage());
+            logger.fatal("Server creating failed: " + e.getMessage());
         }
         if(server!=null) {
             server.createContext("/login", new LoginHandler());
@@ -44,6 +45,7 @@ public class ManagerMain {
             server.createContext("/application/commit", new CommitHandler());
             server.createContext("/application/confirm", new ConfirmHandler());
             server.createContext("/items", new ItemsHandler());
+            server.createContext("/admin/list", new ListAdminHandler());
             server.start();
             System.out.println("Server running");
             while (running) {
