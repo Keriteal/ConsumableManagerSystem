@@ -6,6 +6,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import server.handlers.ItemsHandler;
 import server.handlers.ListAdminHandler;
+import server.handlers.record.RecordHandler;
 import server.handlers.user.CommitHandler;
 import server.handlers.admin.ConfirmHandler;
 import server.handlers.LoginHandler;
@@ -41,11 +42,15 @@ public class ManagerMain {
         if(server!=null) {
             server.createContext("/login", new LoginHandler());
             server.createContext("/register", new RegisterHandler());
+
+            server.createContext("/commit", new CommitHandler());
             server.createContext("/confirm", new ConfirmHandler());
-            server.createContext("/application/commit", new CommitHandler());
-            server.createContext("/application/confirm", new ConfirmHandler());
+
             server.createContext("/items", new ItemsHandler());
             server.createContext("/admin/list", new ListAdminHandler());
+
+            server.createContext("/records/unconfirmed", new RecordHandler());
+
             server.start();
             System.out.println("Server running");
             while (running) {

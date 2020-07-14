@@ -1,0 +1,31 @@
+syntax ="proto3";
+
+option java_outer_classname = "RecordProto";
+option java_package = "model.protobuf";
+
+import  "google/protobuf/timestamp.proto";
+
+//待确认列表
+message RecordRequest{
+  string uuid = 1;
+  string secret = 2;
+}
+
+message RecordInfo{
+  uint32 recordId = 1;
+  string userName = 2;
+  uint32 itemId = 3;
+  string itemName = 4;
+  uint32 count = 5;
+  google.protobuf.Timestamp commitTime = 6;
+}
+
+message RecordResponse{
+  Result result = 1;
+  repeated RecordInfo recordList = 2;
+
+  enum Result {
+    SUCCESS = 0;
+    FAILED = 1;
+  }
+}

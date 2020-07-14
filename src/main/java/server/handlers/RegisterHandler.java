@@ -109,7 +109,7 @@ public class RegisterHandler implements HttpHandler {
         if (!StringUtils.isNotBlank(username) || !StringUtils.isNotBlank(password) || !StringUtils.isNotBlank(name)) {
             throw new MissingParamException();
         }
-        if (!AuthenticationUtils.isValidPassword(password)) {
+        if (!AuthenticationUtils.IsValidPassword(password)) {
             throw new InvalidPasswordException();
         }
         if (contact == null) {

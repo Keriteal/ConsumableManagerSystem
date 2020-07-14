@@ -90,12 +90,12 @@ public class ListAdminHandler implements HttpHandler {
         jsonObject.put("result_description", response.getResult());
 
         JSONArray array = new JSONArray();
-        for (UserInfo info : response.getAdminListList()) {
+        for (AdminInfo info : response.getAdminListList()) {
             JSONObject object = new JSONObject();
             object.put("id", info.getAdminId());
             object.put("name", info.getAdminName());
             object.put("contact", info.getAdminContact());
-            object.put("time_login", info.getUserLatestLoginTime().getSeconds());
+            object.put("time_login", info.getAdminLatestLoginTime().getSeconds());
             array.add(object);
         }
         jsonObject.put("admins", array);
@@ -115,12 +115,12 @@ public class ListAdminHandler implements HttpHandler {
             throw new SecretWrongException();
         }
         builder.setResult(AdminResponse.Result.FAILED);
-        UserInfo.Builder uib = UserInfo.newBuilder();
+        AdminInfo.Builder uib = AdminInfo.newBuilder();
         for (AdminBean bean : dao.listAll()) {
             uib.setAdminId(bean.getId())
                     .setAdminName(bean.getName())
                     .setAdminContact(bean.getContact())
-                    .setUserLatestLoginTime(ProtobufUtils.NativeTimestampToProtoTimestamp(bean.getTimeLogin()));
+                    .setAdminLatestLoginTime(ProtobufUtils.NativeTimestampToProtoTimestamp(bean.getTimeLogin()));
             builder.addAdminList(uib.build());
             builder.setResult(AdminResponse.Result.SUCCESS);
         }

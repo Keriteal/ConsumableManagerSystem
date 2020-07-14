@@ -82,13 +82,16 @@ public class CommitHandler implements HttpHandler {
         String uuid = jsonObject.getString("uuid");
         Integer ci_id = jsonObject.getInteger("consumable_id");
         String secret = jsonObject.getString("secret");
+        Integer count = jsonObject.getInteger("count");
 
         if (StringUtils.isBlank(uuid) || ci_id == null || ci_id == 0 || StringUtils.isBlank(secret)) {
             throw new MissingParamException();
         }
-        builder.setUuid(uuid);
-        builder.setConsumableId(ci_id);
-        builder.setSecret(secret);
+        builder
+                .setUuid(uuid)
+                .setConsumableId(ci_id)
+                .setSecret(secret)
+                .setCount(count);
         return builder.build();
     }
 
@@ -115,6 +118,7 @@ public class CommitHandler implements HttpHandler {
         RecordBean record = new RecordBean();
         record.setUserId(ci.getId()); //申请人
         record.setItemId(request.getConsumableId());//申请的物品
+        record.setCount(request.getCount());
         if (!dao.commit(record)) {
             builder.setResult(CommitResponse.Result.FAILED);
         } else {

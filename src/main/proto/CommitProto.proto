@@ -8,6 +8,7 @@ message CommitRequest{
   string uuid = 1;
   string secret = 2;
   uint32 consumableId = 3;
+  uint32 count = 4;
 }
 
 message CommitResponse {

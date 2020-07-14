@@ -17,7 +17,6 @@ message ItemRequest{
     ADD = 1;
     EDIT = 2;
   }
-
 }
 
 message ItemParams {

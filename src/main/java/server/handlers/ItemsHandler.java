@@ -13,7 +13,7 @@ import exceptions.handler.ContentTypeException;
 import exceptions.handler.LengthRequiredException;
 import exceptions.handler.MissingParamException;
 import model.ConsumableBean;
-import model.protobuf.ConsumableProto.*;
+import model.protobuf.ItemProto.*;
 import model.protobuf.Login;
 import org.apache.commons.lang.StringUtils;
 import org.apache.logging.log4j.LogManager;
@@ -36,8 +36,8 @@ public class ItemsHandler implements HttpHandler {
     public void handle(HttpExchange httpExchange) throws IOException {
         HandlerUtils.ContentType contentType = HandlerUtils.getContentType(httpExchange);
         byte[] reqData, respData;
-        ConsumableRequest req;
-        ConsumableResponse resp;
+        ItemRequest req;
+        ItemResponse resp;
 
         try {
             int contentLength = HandlerUtils.getContentLength(httpExchange);
@@ -45,7 +45,7 @@ public class ItemsHandler implements HttpHandler {
             if (contentType == HandlerUtils.ContentType.JSON) {
                 req = jsonToRequest(reqData);
             } else if (contentType == HandlerUtils.ContentType.PROTOBUF) {
-                req = ConsumableRequest.parseFrom(reqData);
+                req = ItemRequest.parseFrom(reqData);
             } else {
                 throw new ContentTypeException();
             }
@@ -71,34 +71,34 @@ public class ItemsHandler implements HttpHandler {
         }
     }
 
-    private byte[] protoToJson(ConsumableResponse response) {
+    private byte[] protoToJson(ItemResponse response) {
         JSONObject jsonObject = new JSONObject();
-        jsonObject.put("result_code", response.getCodeValue());
-        jsonObject.put("result_description", response.getCode());
-        if (response.getResultList().size() == 0) {
+        jsonObject.put("result_code", response.getResultValue());
+        jsonObject.put("result_description", response.getResult());
+        if (response.getItemListList().size() == 0) {
             return jsonObject.toJSONString().getBytes(StandardCharsets.UTF_8);
         }
         JSONArray array = new JSONArray();
-        for (Params info : response.getResultList()) {
+        for (ItemParams info : response.getItemListList()) {
             JSONObject tmpJson = new JSONObject();
-            tmpJson.put("item_id", info.getConsId());
-            tmpJson.put("item_name", info.getConsName());
-            tmpJson.put("item_stock", info.getConsStock());
-            tmpJson.put("item_added", info.getConsAddedTime().getSeconds());
-            tmpJson.put("item_modified", info.getConsModifiedTime().getSeconds());
+            tmpJson.put("item_id", info.getItemId());
+            tmpJson.put("item_name", info.getItemName());
+            tmpJson.put("item_stock", info.getItemStock());
+            tmpJson.put("item_added", info.getItemAddedTime().getSeconds());
+            tmpJson.put("item_modified", info.getItemModifiedTime().getSeconds());
             array.add(tmpJson);
         }
         jsonObject.put("items", array);
         return jsonObject.toJSONString().getBytes(StandardCharsets.UTF_8);
     }
 
-    private ConsumableRequest jsonToRequest(byte[] bytes)
+    private ItemRequest jsonToRequest(byte[] bytes)
             throws MissingParamException {
         String str = new String(bytes, StandardCharsets.UTF_8);
         logger.debug(str);
         JSONObject jsonObject = JSON.parseObject(str);
-        ConsumableRequest.Builder builder = ConsumableRequest.newBuilder();
-        Params.Builder paramBuilder = Params.newBuilder();
+        ItemRequest.Builder builder = ItemRequest.newBuilder();
+        ItemParams.Builder paramBuilder = ItemParams.newBuilder();
 
         String uuid = jsonObject.getString("uuid");
         String secret = jsonObject.getString("secret");
@@ -108,27 +108,30 @@ public class ItemsHandler implements HttpHandler {
             throw new MissingParamException();
         }
         if (type == null) {
-            type = ConsumableRequest.RequestType.LIST_ALL_VALUE;
+            type = ItemRequest.RequestType.LIST_VALUE;
         }
         JSONObject paramObject = jsonObject.getJSONObject("item_params");
-        if (paramObject == null && type != ConsumableRequest.RequestType.LIST_ALL_VALUE) {
+        if (paramObject == null && type != ItemRequest.RequestType.LIST_VALUE) {
             throw new MissingParamException();
-        } else if (type != ConsumableRequest.RequestType.LIST_ALL_VALUE) {
+        } else if (type != ItemRequest.RequestType.LIST_VALUE) {
             Integer item_id = paramObject.getInteger("id");
             String item_name = paramObject.getString("name");
             Integer item_stock = paramObject.getInteger("stock");
-            paramBuilder.setConsId(item_id).setConsName(item_name).setConsStock(item_stock);
+            paramBuilder
+                    .setItemId(item_id)
+                    .setItemName(item_name)
+                    .setItemStock(item_stock);
         }
         builder.setUuid(uuid).setTypeValue(type).setSecret(secret).setParam(paramBuilder.build());
         return builder.build();
     }
 
-    private ConsumableResponse getResponse(ConsumableRequest request)
+    private ItemResponse getResponse(ItemRequest request)
             throws NotLoginException, SecretWrongException {
-        ConsumableResponse.Builder builder = ConsumableResponse.newBuilder();
+        ItemResponse.Builder builder = ItemResponse.newBuilder();
         String uuid = request.getUuid();
         String secret = request.getSecret();
-        Params param = request.getParam();
+        ItemParams param = request.getParam();
         ClientInstance ci = ManagerMain.clientInstanceMap.get(uuid);
         if (ci == null) {
             throw new NotLoginException();
@@ -142,39 +145,41 @@ public class ItemsHandler implements HttpHandler {
                     break;
                 }
                 ConsumableBean bean = new ConsumableBean();
-                bean.setName(param.getConsName());
-                bean.setStock(param.getConsStock());
+                bean.setName(param.getItemName());
+                bean.setStock(param.getItemStock());
                 if (dao.insert(bean)) {
-                    builder.setCode(ConsumableResponse.Result.SUCCESS);
+                    builder.setResult(ItemResponse.Result.SUCCESS);
                 } else {
-                    builder.setCode(ConsumableResponse.Result.FAILED);
+                    builder.setResult(ItemResponse.Result.FAILED);
                 }
                 break;
             }
             case EDIT: {
                 if (ci.getUserType() != Login.LoginRequest.UserType.ADMIN) {
+                    // 仅管理员
                     break;
                 }
                 ConsumableBean bean = new ConsumableBean();
-                bean.setId(param.getConsId());
-                bean.setName(param.getConsName());
-                bean.setStock(param.getConsStock());
+                bean.setId(param.getItemId()); //item ID
+                bean.setName(param.getItemName()); //item new Name
+                bean.setStock(param.getItemStock()); //item new Stock
                 if (dao.edit(bean)) {
-                    builder.setCode(ConsumableResponse.Result.SUCCESS);
+                    builder.setResult(ItemResponse.Result.SUCCESS);
                 } else {
-                    builder.setCode(ConsumableResponse.Result.FAILED);
+                    builder.setResult(ItemResponse.Result.FAILED);
                 }
                 break;
             }
-            case LIST_ALL: {
-                Params.Builder b = Params.newBuilder();
+            case LIST: {
+                ItemParams.Builder b = ItemParams.newBuilder();
                 for (ConsumableBean bean : dao.listAll()) {
-                    b.setConsId(bean.getId())
-                            .setConsName(bean.getName())
-                            .setConsStock(bean.getStock())
-                            .setConsAddedTime(ProtobufUtils.NativeTimestampToProtoTimestamp(bean.getAddedTime()))
-                            .setConsModifiedTime(ProtobufUtils.NativeTimestampToProtoTimestamp(bean.getModifiedTime()));
-                    builder.addResult(b.build());
+                    b
+                            .setItemId(bean.getId())
+                            .setItemName(bean.getName())
+                            .setItemStock(bean.getStock())
+                            .setItemAddedTime(ProtobufUtils.NativeTimestampToProtoTimestamp(bean.getAddedTime()))
+                            .setItemModifiedTime(ProtobufUtils.NativeTimestampToProtoTimestamp(bean.getModifiedTime()));
+                    builder.addItemList(b.build());
                 }
                 break;
             }
@@ -185,7 +190,7 @@ public class ItemsHandler implements HttpHandler {
         return builder.build();
     }
 
-    private void Response(HttpExchange t, ConsumableResponse resp, HandlerUtils.ContentType contentType)
+    private void Response(HttpExchange t, ItemResponse resp, HandlerUtils.ContentType contentType)
             throws IOException {
         byte[] respBytes;
         if (contentType == HandlerUtils.ContentType.JSON) {

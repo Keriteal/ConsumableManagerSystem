@@ -58,7 +58,12 @@ public class AuthenticationUtils {
             return DatatypeConverter.printHexBinary(encoded).toLowerCase();
     }
 
-    public static boolean isValidPassword(String password) {
+    public static boolean IsValidUsername(String username) {
+        //TODO 验证用户名合法性
+        return true;
+    }
+
+    public static boolean IsValidPassword(String password) {
         // TODO: 验证密码可用性
         return true;
     }

@@ -95,7 +95,7 @@ public class UserDAO {
         return ret;
     }
 
-    public UserBean getUserBean(String userName) throws NoSuchUserException {
+    public UserBean query(String userName) throws NoSuchUserException {
         UserBean user = new UserBean();
         try (Connection connection = HikariCpUtils.getConnection();
              PreparedStatement ps = connection.prepareStatement(QueryGetBean)) {

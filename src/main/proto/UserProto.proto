@@ -1,5 +1,7 @@
 syntax = "proto3";
+
 import  "google/protobuf/timestamp.proto";
+
 option java_package = "model.protobuf";
 option java_outer_classname = "UserProto";
 
@@ -8,6 +10,7 @@ message UserRequest{
   string uuid = 1;
   string secret = 2;
   UserParams params = 3;
+  RequestType type = 4;
 
   enum RequestType {
     LIST = 0;
