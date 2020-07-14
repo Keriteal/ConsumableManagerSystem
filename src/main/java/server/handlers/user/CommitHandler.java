@@ -113,8 +113,8 @@ public class CommitHandler implements HttpHandler {
             throw new SecretWrongException();
         }
         RecordBean record = new RecordBean();
-        record.setApplicationUser(ci.getId()); //申请人
-        record.setConsumableItemId(request.getConsumableId());//申请的物品
+        record.setUserId(ci.getId()); //申请人
+        record.setItemId(request.getConsumableId());//申请的物品
         if (!dao.commit(record)) {
             builder.setResult(CommitResponse.Result.FAILED);
         } else {

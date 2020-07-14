@@ -25,7 +25,7 @@ public class UserDAO {
     private static final String InsertSql = "INSERT INTO " + UserClass.getAnnotation(SqlTable.class).tableName() + "(" +
             UserBean.COLUMN_USER_NAME + "," + UserBean.COLUMN_PASSWORD + "," +
             UserBean.COLUMN_NAME + "," + UserBean.COLUMN_CONTACT + "," +
-            UserBean.COLUMN_REGISTER_TIME + "," + UserBean.COLUMN_LOGIN_TIME +
+            UserBean.COLUMN_TIME_REGISTER + "," + UserBean.COLUMN_TIME_LOGIN +
             ") VALUES (?, ?, ?, ?, NOW(), NOW())";
 
     /*
@@ -107,11 +107,11 @@ public class UserDAO {
                 user.setName(rs.getString(UserBean.COLUMN_NAME));
                 user.setPassword(rs.getString(UserBean.COLUMN_PASSWORD));
                 user.setContact(rs.getString(UserBean.COLUMN_CONTACT));
-                user.setRegisterTime(rs.getTimestamp(UserBean.COLUMN_REGISTER_TIME));
-                user.setLatestLogin(rs.getTimestamp(UserBean.COLUMN_LOGIN_TIME));
+                user.setRegisterTime(rs.getTimestamp(UserBean.COLUMN_TIME_REGISTER));
+                user.setLatestLogin(rs.getTimestamp(UserBean.COLUMN_TIME_LOGIN));
                 connection.createStatement().executeUpdate(
                         "UPDATE " + UserBean.TABLE_NAME + " SET " +
-                                UserBean.COLUMN_LOGIN_TIME + "=NOW() " +
+                                UserBean.COLUMN_TIME_LOGIN + "=NOW() " +
                                 "WHERE " + UserBean.COLUMN_ID + "=" + user.getId()
                 );
             } else {

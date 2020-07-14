@@ -2,7 +2,7 @@ package model;
 
 import annotations.sql.*;
 import model.Interfaces.IBean;
-import model.Interfaces.IPassword;
+
 import java.sql.*;
 
 import static model.UserBean.COLUMN_ID;
@@ -16,12 +16,12 @@ public class UserBean implements IBean {
     public static final String TABLE_NAME = "consumables_user";
 
     public static final String COLUMN_ID = "cu_id";
-    public static final String COLUMN_USER_NAME = "cu_user_name";
+    public static final String COLUMN_USER_NAME = "cu_username";
     public static final String COLUMN_PASSWORD = "cu_password";
     public static final String COLUMN_NAME = "cu_name";
     public static final String COLUMN_CONTACT = "cu_contact";
-    public static final String COLUMN_REGISTER_TIME = "cu_register_time";
-    public static final String COLUMN_LOGIN_TIME = "cu_latest_login";
+    public static final String COLUMN_TIME_REGISTER = "cu_time_register";
+    public static final String COLUMN_TIME_LOGIN = "cu_time_login";
 
     @SqlColumn(COLUMN_ID)
     @SqlQueryCondition(CONDITION_ID)
@@ -42,11 +42,16 @@ public class UserBean implements IBean {
     @SqlColumn(COLUMN_CONTACT)
     private String contact;
 
-    @SqlColumn(COLUMN_REGISTER_TIME)
+    @SqlColumn(COLUMN_TIME_REGISTER)
     private Timestamp registerTime;
 
-    @SqlColumn(COLUMN_LOGIN_TIME)
+    @SqlColumn(COLUMN_TIME_LOGIN)
     private Timestamp latestLogin;
+
+    @Override
+    public int getIdentity() {
+        return id;
+    }
 
     public int getId() {
         return id;
@@ -54,6 +59,22 @@ public class UserBean implements IBean {
 
     public void setId(int id) {
         this.id = id;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
     }
 
     public String getName() {
@@ -72,14 +93,6 @@ public class UserBean implements IBean {
         this.contact = contact;
     }
 
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
     public Timestamp getRegisterTime() {
         return registerTime;
     }
@@ -94,18 +107,5 @@ public class UserBean implements IBean {
 
     public void setLatestLogin(Timestamp latestLogin) {
         this.latestLogin = latestLogin;
-    }
-
-    public String getUsername() {
-        return username;
-    }
-
-    public void setUsername(String username) {
-        this.username = username;
-    }
-
-    @Override
-    public int getIdentity() {
-        return id;
     }
 }

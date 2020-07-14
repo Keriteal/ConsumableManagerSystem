@@ -14,19 +14,15 @@ import java.sql.Statement;
 
 public class RecordDAO {
     private static final String SqlCommit = "INSERT INTO " + RecordBean.TABLE_NAME + "(" +
-            RecordBean.COLUMN_USER + "," + RecordBean.COLUMN_ITEM + "," +
+            RecordBean.COLUMN_USER + "," + RecordBean.COLUMN_ITEM + "," + RecordBean.COLUMN_COUNT + "," +
             RecordBean.COLUMN_TIME_COMMIT + ") " +
-            "VALUES (?,?,NOW());";
+            "VALUES (?,?,?,NOW());";
     private static final String SqlConfirm = "UPDATE " + RecordBean.TABLE_NAME + " " +
             "SET " + RecordBean.COLUMN_ADMIN + "=?, " +
             RecordBean.COLUMN_TIME_CONFIRM + "=NOW() " +
             "WHERE " + RecordBean.COLUMN_ID + "=?";
 
     private static final Logger logger = LogManager.getLogger();
-
-    public int apply(ConsumableBean consumable, UserBean user) {
-        return 0;
-    }
 
     public RecordBean listUnconfirmed() {
         try {
@@ -43,8 +39,9 @@ public class RecordDAO {
         try (Connection connection = HikariCpUtils.getConnection();
              PreparedStatement ps = connection.prepareStatement(SqlCommit)) {
             logger.debug(SqlCommit);
-            ps.setInt(1, record.getApplicationUser());
-            ps.setInt(2, record.getConsumableItemId());
+            ps.setInt(1, record.getUserId());
+            ps.setInt(2, record.getItemId());
+            ps.setInt(3, record.getCount());
             int rows = ps.executeUpdate();
             if (rows == 1) {
                 return true;
@@ -60,7 +57,7 @@ public class RecordDAO {
              PreparedStatement ps = connection.prepareStatement(SqlConfirm)) {
             logger.debug(SqlConfirm);
             ps.setInt(1, record.getId());
-            ps.setInt(2, record.getAdminUser());
+            ps.setInt(2, record.getAdminId());
             int rows = ps.executeUpdate();
             if (rows == 1) {
                 return true;

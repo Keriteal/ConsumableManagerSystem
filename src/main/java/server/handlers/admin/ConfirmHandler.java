@@ -97,8 +97,8 @@ public class ConfirmHandler implements HttpHandler {
             throw new PermissionException();
         }
         RecordBean record = new RecordBean();
-        record.setConsumableItemId(cr_id);
-        record.setAdminUser(ci.getId());
+        record.setId(cr_id);
+        record.setAdminId(ci.getId());
 
         if (dao.confirm(record)) {
             builder.setResult(ConfirmResponse.Result.SUCCESS);

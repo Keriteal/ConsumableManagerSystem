@@ -3,7 +3,6 @@ package server.handlers;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
-import com.sun.deploy.net.HttpUtils;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import consts.HttpStatusCode;
@@ -14,9 +13,8 @@ import exceptions.handler.ContentTypeException;
 import exceptions.handler.LengthRequiredException;
 import exceptions.handler.MissingParamException;
 import model.ConsumableBean;
-import model.protobuf.CommitProto;
 import model.protobuf.ConsumableProto.*;
-import model.protobuf.UserProto;
+import model.protobuf.Login;
 import org.apache.commons.lang.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -29,6 +27,7 @@ import utils.ProtobufUtils;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 
+// 对耗材的增改查
 public class ItemsHandler implements HttpHandler {
     private static final Logger logger = LogManager.getLogger();
     private static final ConsumableDAO dao = new ConsumableDAO();
@@ -54,6 +53,7 @@ public class ItemsHandler implements HttpHandler {
             Response(httpExchange, resp, contentType);
         } catch (LengthRequiredException e) {
             httpExchange.sendResponseHeaders(HttpStatusCode.LENGTH_REQUIRED, 0);
+            logger.debug("缺少长度参数");
         } catch (ContentTypeException e) {
             httpExchange.sendResponseHeaders(HttpStatusCode.BAD_REQUEST, 0);
             logger.debug("Content-Type Wrong");
@@ -66,6 +66,8 @@ public class ItemsHandler implements HttpHandler {
         } catch (SecretWrongException e) {
             httpExchange.sendResponseHeaders(HttpStatusCode.FORBIDDEN, 0);
             logger.debug("密钥错误");
+        } finally {
+            httpExchange.close();
         }
     }
 
@@ -82,7 +84,8 @@ public class ItemsHandler implements HttpHandler {
             tmpJson.put("item_id", info.getConsId());
             tmpJson.put("item_name", info.getConsName());
             tmpJson.put("item_stock", info.getConsStock());
-            tmpJson.put("item_added", info.getConsAddedTime());
+            tmpJson.put("item_added", info.getConsAddedTime().getSeconds());
+            tmpJson.put("item_modified", info.getConsModifiedTime().getSeconds());
             array.add(tmpJson);
         }
         jsonObject.put("items", array);
@@ -130,11 +133,14 @@ public class ItemsHandler implements HttpHandler {
         if (ci == null) {
             throw new NotLoginException();
         }
-        if (ci.getSecret().equals(secret)) {
+        if (!ci.getSecret().equals(secret)) {
             throw new SecretWrongException();
         }
         switch (request.getType()) {
             case ADD: {
+                if (ci.getUserType() != Login.LoginRequest.UserType.ADMIN) {
+                    break;
+                }
                 ConsumableBean bean = new ConsumableBean();
                 bean.setName(param.getConsName());
                 bean.setStock(param.getConsStock());
@@ -146,6 +152,9 @@ public class ItemsHandler implements HttpHandler {
                 break;
             }
             case EDIT: {
+                if (ci.getUserType() != Login.LoginRequest.UserType.ADMIN) {
+                    break;
+                }
                 ConsumableBean bean = new ConsumableBean();
                 bean.setId(param.getConsId());
                 bean.setName(param.getConsName());
@@ -165,7 +174,7 @@ public class ItemsHandler implements HttpHandler {
                             .setConsStock(bean.getStock())
                             .setConsAddedTime(ProtobufUtils.NativeTimestampToProtoTimestamp(bean.getAddedTime()))
                             .setConsModifiedTime(ProtobufUtils.NativeTimestampToProtoTimestamp(bean.getModifiedTime()));
-
+                    builder.addResult(b.build());
                 }
                 break;
             }

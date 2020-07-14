@@ -17,11 +17,11 @@ public class ConsumableDAO {
 
     private static final String SqlList = "SELECT * FROM " + ConsumableBean.TABLE_NAME;
     private static final String SqlAdd = "INSERT INTO " + ConsumableBean.TABLE_NAME + "(" +
-            ConsumableBean.COLUMN_NAME + "," + ConsumableBean.COLUMN_STOCK + "," +
-            ConsumableBean.COLUMN_TIME_ADD + ",) " +
-            "VALUES (?,?,NOW())";
-    private static final String SqlEdit = "UPDATE " + ConsumableBean.TABLE_NAME +
-            "SET " + ConsumableBean.COLUMN_NAME + "=? " + ConsumableBean.COLUMN_STOCK + "=?" +
+            ConsumableBean.COLUMN_NAME + ", " + ConsumableBean.COLUMN_STOCK + ", " +
+            ConsumableBean.COLUMN_TIME_ADD + ", " + ConsumableBean.COLUMN_TIME_MODIFIED + " ) " +
+            "VALUES (?,?,NOW(),NOW())";
+    private static final String SqlEdit = "UPDATE " + ConsumableBean.TABLE_NAME + " " +
+            "SET " + ConsumableBean.COLUMN_NAME + "=?, " + ConsumableBean.COLUMN_STOCK + "=?, " +
             ConsumableBean.COLUMN_TIME_MODIFIED + "=NOW() " +
             "WHERE " + ConsumableBean.COLUMN_ID + "=?";
 
@@ -34,8 +34,8 @@ public class ConsumableDAO {
             while (rs.next()) {
                 ConsumableBean bean = new ConsumableBean();
                 bean.setId(rs.getInt(ConsumableBean.COLUMN_ID));
-                bean.setStock(rs.getInt(ConsumableBean.COLUMN_STOCK));
                 bean.setName(rs.getString(ConsumableBean.COLUMN_NAME));
+                bean.setStock(rs.getInt(ConsumableBean.COLUMN_STOCK));
                 bean.setAddedTime(rs.getTimestamp(ConsumableBean.COLUMN_TIME_ADD));
                 bean.setModifiedTime(rs.getTimestamp(ConsumableBean.COLUMN_TIME_MODIFIED));
                 list.add(bean);
@@ -49,6 +49,7 @@ public class ConsumableDAO {
     public boolean insert(ConsumableBean consumable) {
         try (Connection connection = HikariCpUtils.getConnection();
              PreparedStatement ps = connection.prepareStatement(SqlAdd)) {
+            logger.debug(SqlAdd);
             ps.setString(1, consumable.getName());
             ps.setInt(2, consumable.getStock());
             if (ps.executeUpdate() == 1) {
@@ -63,6 +64,7 @@ public class ConsumableDAO {
     public boolean edit(ConsumableBean consumable) {
         try (Connection connection = HikariCpUtils.getConnection();
              PreparedStatement ps = connection.prepareStatement(SqlEdit)) {
+            logger.debug(SqlEdit);
             ps.setString(1, consumable.getName());
             ps.setInt(2, consumable.getStock());
             ps.setInt(3, consumable.getId());

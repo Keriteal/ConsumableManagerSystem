@@ -13,13 +13,13 @@ import java.sql.Timestamp;
 public class ConsumableBean implements IBean {
     public static final int CONDITION_ID = 0x001;
 
-    public static final String TABLE_NAME = "consumable_items";
+    public static final String TABLE_NAME = "consumables_item";
 
     public static final String COLUMN_ID = "ci_id";
     public static final String COLUMN_NAME = "ci_name";
     public static final String COLUMN_STOCK = "ci_stock";
-    public static final String COLUMN_TIME_ADD = "ci_added_datetime";
-    public static final String COLUMN_TIME_MODIFIED = "ci_modified_datetime";
+    public static final String COLUMN_TIME_ADD = "ci_time_add";
+    public static final String COLUMN_TIME_MODIFIED = "ci_time_modify";
 
     @SqlColumn(value = COLUMN_ID, columnType = ColumnType.UINT)
     @SqlQueryCondition(CONDITION_ID)
