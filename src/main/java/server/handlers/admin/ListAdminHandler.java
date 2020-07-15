@@ -1,4 +1,4 @@
-package server.handlers;
+package server.handlers.admin;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;

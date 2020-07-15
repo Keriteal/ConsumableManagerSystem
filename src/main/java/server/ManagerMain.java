@@ -4,13 +4,15 @@ import com.sun.net.httpserver.HttpServer;
 import model.UserBean;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import server.handlers.ItemsHandler;
-import server.handlers.ListAdminHandler;
+import server.handlers.item.ItemsHandler;
+import server.handlers.admin.ListAdminHandler;
 import server.handlers.record.RecordHandler;
-import server.handlers.user.CommitHandler;
-import server.handlers.admin.ConfirmHandler;
-import server.handlers.LoginHandler;
-import server.handlers.RegisterHandler;
+import server.handlers.record.CommitHandler;
+import server.handlers.record.ConfirmHandler;
+import server.handlers.user.LoginHandler;
+import server.handlers.user.LogoutHandler;
+import server.handlers.user.RegisterHandler;
+import server.handlers.user.ListUserHandler;
 import utils.SqlStatementUtils;
 
 import java.io.IOException;
@@ -40,14 +42,16 @@ public class ManagerMain {
             logger.fatal("Server creating failed: " + e.getMessage());
         }
         if(server!=null) {
-            server.createContext("/login", new LoginHandler());
-            server.createContext("/register", new RegisterHandler());
+            server.createContext("/user/login", new LoginHandler());
+            server.createContext("/user/register", new RegisterHandler());
+            server.createContext("/user/logout", new LogoutHandler());
 
-            server.createContext("/commit", new CommitHandler());
-            server.createContext("/confirm", new ConfirmHandler());
+            server.createContext("/record/commit", new CommitHandler());
+            server.createContext("/record/confirm", new ConfirmHandler());
 
             server.createContext("/items", new ItemsHandler());
             server.createContext("/admin/list", new ListAdminHandler());
+            server.createContext("/user/list", new ListUserHandler());
 
             server.createContext("/records/unconfirmed", new RecordHandler());
 

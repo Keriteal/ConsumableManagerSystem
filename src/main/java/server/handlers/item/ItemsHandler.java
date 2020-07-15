@@ -1,4 +1,4 @@
-package server.handlers;
+package server.handlers.item;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
@@ -34,6 +34,7 @@ public class ItemsHandler implements HttpHandler {
 
     @Override
     public void handle(HttpExchange httpExchange) throws IOException {
+        logger.debug("=======Handle Item=======");
         HandlerUtils.ContentType contentType = HandlerUtils.getContentType(httpExchange);
         byte[] reqData, respData;
         ItemRequest req;
@@ -67,6 +68,7 @@ public class ItemsHandler implements HttpHandler {
             httpExchange.sendResponseHeaders(HttpStatusCode.FORBIDDEN, 0);
             logger.debug("密钥错误");
         } finally {
+            logger.debug("=========================");
             httpExchange.close();
         }
     }
@@ -101,8 +103,11 @@ public class ItemsHandler implements HttpHandler {
         ItemParams.Builder paramBuilder = ItemParams.newBuilder();
 
         String uuid = jsonObject.getString("uuid");
+        logger.debug("uuid:" + uuid);
         String secret = jsonObject.getString("secret");
+        logger.debug("secret:" + secret);
         Integer type = jsonObject.getInteger("type");
+        logger.debug("type:" + type);
 
         if (StringUtils.isBlank(uuid) || StringUtils.isBlank(secret)) {
             throw new MissingParamException();
@@ -130,7 +135,9 @@ public class ItemsHandler implements HttpHandler {
             throws NotLoginException, SecretWrongException {
         ItemResponse.Builder builder = ItemResponse.newBuilder();
         String uuid = request.getUuid();
+        logger.debug("uuid:" + uuid);
         String secret = request.getSecret();
+        logger.debug("secret:" + secret);
         ItemParams param = request.getParam();
         ClientInstance ci = ManagerMain.clientInstanceMap.get(uuid);
         if (ci == null) {
@@ -139,6 +146,7 @@ public class ItemsHandler implements HttpHandler {
         if (!ci.getSecret().equals(secret)) {
             throw new SecretWrongException();
         }
+        logger.debug("type:" + request.getType());
         switch (request.getType()) {
             case ADD: {
                 if (ci.getUserType() != Login.LoginRequest.UserType.ADMIN) {

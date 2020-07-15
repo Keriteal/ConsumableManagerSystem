@@ -1,77 +1,28 @@
 package dao;
 
-import annotations.sql.SqlTable;
-import exceptions.LoginFailedException;
 import exceptions.NoSuchUserException;
 import exceptions.register.AlreadyHasUserException;
 import model.UserBean;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import utils.HikariCpUtils;
-import utils.SqlStatementUtils;
 
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class UserDAO {
-    public static final int LOGIN_FAILED = -1;
-
     private static final Logger logger = LogManager.getLogger(LogManager.ROOT_LOGGER_NAME);
 
-    private static final Class<UserBean> UserClass = UserBean.class;
-    private static final String QueryString = SqlStatementUtils.generateQuery(UserClass);
     private static final String QueryGetBean = "SELECT * " +
             "FROM " + UserBean.TABLE_NAME + " " +
             "WHERE " + UserBean.COLUMN_USER_NAME + "=? ";
-    private static final String InsertSql = "INSERT INTO " + UserClass.getAnnotation(SqlTable.class).tableName() + "(" +
+    private static final String InsertSql = "INSERT INTO " + UserBean.TABLE_NAME + "(" +
             UserBean.COLUMN_USER_NAME + "," + UserBean.COLUMN_PASSWORD + "," +
             UserBean.COLUMN_NAME + "," + UserBean.COLUMN_CONTACT + "," +
             UserBean.COLUMN_TIME_REGISTER + "," + UserBean.COLUMN_TIME_LOGIN +
             ") VALUES (?, ?, ?, ?, NOW(), NOW())";
-
-    /*
-     * @Author keriteal
-     * @Description
-     * @Date 18:24 2020/7/11
-     * @Param [user]
-     * @return int 用户id
-     **/
-    public int query(UserBean user, int QueryCondition) throws LoginFailedException {
-        logger.debug("Request Query " + user.getIdentity());
-        Connection connection = null;
-        PreparedStatement ps = null;
-        int ret = LOGIN_FAILED;
-        try {
-            connection = HikariCpUtils.getConnection();
-            ps = connection.prepareStatement(SqlStatementUtils.generateQueryCondition(UserClass, QueryCondition));
-            ps.setInt(1, user.getId());
-            ps.setString(2, user.getPassword());
-
-            ResultSet rs = ps.executeQuery();
-            while (rs.next()) {
-                if (ret == LOGIN_FAILED) {
-                    ret = rs.getInt("cu_id");
-                } else {
-                    ret = LOGIN_FAILED;
-                }
-            }
-            rs.close();
-        } catch (Exception e) {
-            logger.error("Exception when query user");
-            throw new LoginFailedException();
-        } finally {
-            try {
-                if (ps != null) {
-                    ps.close();
-                }
-                if (connection != null) {
-                    connection.close();
-                }
-            } catch (Exception e) {
-                logger.debug(e.getMessage());
-            }
-        }
-        return ret;
-    }
+    private static final String SqlList = "SELECT * FROM " + UserBean.TABLE_NAME;
 
     public boolean insert(UserBean user) throws AlreadyHasUserException {
         boolean ret = false;
@@ -88,7 +39,7 @@ public class UserDAO {
             }
         } catch (SQLException sqlException) {
             logger.fatal("SQLException occurs：" + sqlException.getLocalizedMessage());
-            if (sqlException.getLocalizedMessage().contains("for key 'consumables_user.index_name'")) {
+            if (sqlException.getLocalizedMessage().contains("Duplicate")) {
                 throw new AlreadyHasUserException();
             }
         }
@@ -121,5 +72,27 @@ public class UserDAO {
             logger.error(sqlException.getLocalizedMessage());
         }
         return user;
+    }
+
+    public List<UserBean> list() {
+        List<UserBean> list = new ArrayList<>();
+        try (Connection connection = HikariCpUtils.getConnection();
+             Statement statement = connection.createStatement();
+             ResultSet rs = statement.executeQuery(SqlList)
+        ) {
+            while (rs.next()) {
+                UserBean bean = new UserBean();
+                bean.setId(rs.getInt(UserBean.COLUMN_ID));
+                bean.setUsername(rs.getString(UserBean.COLUMN_USER_NAME));
+                bean.setName(rs.getString(UserBean.COLUMN_NAME));
+                bean.setContact(rs.getString(UserBean.COLUMN_CONTACT));
+                bean.setRegisterTime(rs.getTimestamp(UserBean.COLUMN_TIME_REGISTER));
+                bean.setLatestLogin(rs.getTimestamp(UserBean.COLUMN_TIME_LOGIN));
+                list.add(bean);
+            }
+        } catch (SQLException e) {
+            logger.fatal(e.getLocalizedMessage());
+        }
+        return list;
     }
 }

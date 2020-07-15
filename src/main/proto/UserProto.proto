@@ -10,13 +10,6 @@ message UserRequest{
   string uuid = 1;
   string secret = 2;
   UserParams params = 3;
-  RequestType type = 4;
-
-  enum RequestType {
-    LIST = 0;
-    ADD = 1;
-    EDIT = 2;
-  }
 }
 
 message UserParams {
@@ -33,6 +26,6 @@ message UserResponse {
 
   enum Result{
     SUCCESS = 0;
-    FAILED = 1;
+    PERMISSION_DENIED = 1;
   }
 }

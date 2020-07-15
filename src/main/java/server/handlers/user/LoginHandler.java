@@ -1,15 +1,13 @@
-package server.handlers;
+package server.handlers.user;
 
 import consts.HttpStatusCode;
 import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONException;
 import com.alibaba.fastjson.JSONObject;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import dao.AdminDAO;
 import dao.UserDAO;
 import exceptions.NoSuchUserException;
-import exceptions.PasswordWrongException;
 import exceptions.handler.ContentTypeException;
 import exceptions.handler.LengthRequiredException;
 import exceptions.handler.MissingParamException;
@@ -26,8 +24,6 @@ import utils.CodingUtils;
 import utils.HandlerUtils;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
 import java.security.NoSuchAlgorithmException;
 
@@ -73,17 +69,20 @@ public class LoginHandler implements HttpHandler {
         } finally {
             t.close();
         }
-        logger.debug("==============");
+        logger.debug("===================");
     }
 
     private LoginResponse getResponse(LoginRequest request)
             throws NoSuchAlgorithmException {
         LoginResponse.Builder builder = LoginResponse.newBuilder();
         String uuid = request.getUuid();
+        logger.debug("uuid:" + uuid);
         String password = request.getPassword();
+        logger.debug("password:" + password);
         String username = request.getUsername();
+        logger.debug("username" + username);
         String secret = null;
-        int id = 0;
+        int id;
         try {
             builder.setResult(LoginResponse.Result.SUCCESS);
             if (request.getUserType() == LoginRequest.UserType.ADMIN) {
@@ -129,7 +128,7 @@ public class LoginHandler implements HttpHandler {
         logger.debug(str);
         JSONObject jsonObject = JSON.parseObject(str);
         LoginRequest.Builder builder = LoginRequest.newBuilder();
-         String uuid = jsonObject.getString("uuid");
+        String uuid = jsonObject.getString("uuid");
         String username = jsonObject.getString("username");
         String password = jsonObject.getString("password");
         String userType = jsonObject.getString("usertype");
@@ -137,7 +136,7 @@ public class LoginHandler implements HttpHandler {
         if (StringUtils.isBlank(uuid) || StringUtils.isBlank(username) || StringUtils.isBlank(password)) {
             throw new MissingParamException();
         }
-        if(userType.equals("admin")){
+        if (userType.equals("admin")) {
             builder.setUserType(LoginRequest.UserType.ADMIN);
         } else {
             builder.setUserType(LoginRequest.UserType.USER);

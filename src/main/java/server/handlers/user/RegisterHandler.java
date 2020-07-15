@@ -1,4 +1,4 @@
-package server.handlers;
+package server.handlers.user;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONException;
@@ -58,7 +58,7 @@ public class RegisterHandler implements HttpHandler {
                 return;
             }
             //构建响应字节数组
-            if(contentType == HandlerUtils.ContentType.JSON) {
+            if (contentType == HandlerUtils.ContentType.JSON) {
                 responseBytes = protoToJson(responseProto);
             } else {
                 responseBytes = responseProto.toByteArray();
@@ -69,11 +69,6 @@ public class RegisterHandler implements HttpHandler {
             httpExchange.sendResponseHeaders(HttpStatusCode.NOT_ACCEPTABLE, 0);
         } catch (MissingParamException missingParamException) {
             httpExchange.sendResponseHeaders(HttpStatusCode.BAD_REQUEST, 0);
-        } catch (AlreadyHasUserException e) {
-            builder.setResult(RegisterProto.RegisterResponse.Result.REPEAT);
-            responseBytes = builder.build().toByteArray();
-            httpExchange.sendResponseHeaders(HttpStatusCode.HTTP_OK, responseBytes.length);
-            os.write(responseBytes);
         } catch (InvalidPasswordException e) {
             builder.setResult(RegisterProto.RegisterResponse.Result.INVALID_USERNAME);
             responseBytes = builder.build().toByteArray();
@@ -126,8 +121,8 @@ public class RegisterHandler implements HttpHandler {
         return json.toJSONString().getBytes(StandardCharsets.UTF_8);
     }
 
-    private RegisterProto.RegisterResponse register(RegisterProto.RegisterRequest request) throws AlreadyHasUserException {
-        RegisterProto.RegisterResponse.Builder builder;
+    private RegisterProto.RegisterResponse register(RegisterProto.RegisterRequest request) {
+        RegisterProto.RegisterResponse.Builder builder = RegisterProto.RegisterResponse.newBuilder();;
         UserDAO userDAO = new UserDAO();
         UserBean user = new UserBean();
         user.setUsername(request.getUsername());
@@ -136,9 +131,10 @@ public class RegisterHandler implements HttpHandler {
         user.setContact(request.getContact());
         try {
             userDAO.insert(user);
-            builder = RegisterProto.RegisterResponse.newBuilder();
             builder.setResult(RegisterProto.RegisterResponse.Result.SUCCESS);
             return builder.build();
+        } catch (AlreadyHasUserException e) {
+            builder.setResult(RegisterProto.RegisterResponse.Result.REPEAT);
         } catch (Exception e) {
             logger.debug(e);
         }

@@ -1,4 +1,4 @@
-package server.handlers.user;
+package server.handlers.record;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
@@ -31,12 +31,12 @@ public class CommitHandler implements HttpHandler {
 
     @Override
     public void handle(HttpExchange httpExchange) throws IOException {
+        logger.debug("=======Handle Commit=======");
         HandlerUtils.ContentType contentType = HandlerUtils.getContentType(httpExchange);
         CommitRequest req;
         CommitResponse resp;
         byte[] reqBytes;
         try {
-            InputStream is = httpExchange.getRequestBody();
             //获取请求数据
             int contentLength = HandlerUtils.getContentLength(httpExchange);
             reqBytes = CodingUtils.streamToByteArray(httpExchange.getRequestBody(), contentLength);
@@ -68,12 +68,14 @@ public class CommitHandler implements HttpHandler {
             httpExchange.sendResponseHeaders(HttpStatusCode.FORBIDDEN, 0);
             logger.debug("密钥错误::" + e.getMessage());
         } finally {
+            logger.debug("===========================");
             httpExchange.close();
         }
     }
 
     private CommitRequest jsonToProto(byte[] bytes)
             throws MissingParamException {
+        logger.debug("Required Param: uuid, secret, consumable_id, count");
         String str = new String(bytes, StandardCharsets.UTF_8);
         logger.debug(str);
         JSONObject jsonObject = JSON.parseObject(str);

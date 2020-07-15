@@ -1,7 +1,6 @@
-package server.handlers.admin;
+package server.handlers.record;
 
 import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONException;
 import com.alibaba.fastjson.JSONObject;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
@@ -36,8 +35,9 @@ public class ConfirmHandler implements HttpHandler {
 
     @Override
     public void handle(HttpExchange t) throws IOException {
+        logger.debug("=======Handle Confirm=======");
         HandlerUtils.ContentType contentType = HandlerUtils.getContentType(t);
-        byte[] reqBytes, respBytes;
+        byte[] reqBytes;
         ConfirmRequest req;
         ConfirmResponse resp;
 
@@ -77,19 +77,23 @@ public class ConfirmHandler implements HttpHandler {
         } finally {
             t.close();
         }
+        logger.debug("============================");
     }
 
     private ConfirmResponse getResponse(ConfirmRequest request)
             throws NotLoginException, SecretWrongException, PermissionException {
         ConfirmResponse.Builder builder = ConfirmResponse.newBuilder();
         String uuid = request.getUuid();
-        int cr_id = request.getRecordId();
+        logger.debug("uuid:" + uuid);
         String secret = request.getSecret();
+        logger.debug("secret:" + secret);
+        int cr_id = request.getRecordId();
         ClientInstance ci = ManagerMain.clientInstanceMap.get(uuid);
 
         if (ci == null) {
             throw new NotLoginException();
         }
+        logger.debug(ci.toString());
         if (!ci.getSecret().equals(secret)) {
             throw new SecretWrongException();
         }
@@ -127,6 +131,7 @@ public class ConfirmHandler implements HttpHandler {
 
     private ConfirmRequest jsonToProto(byte[] bytes)
             throws MissingParamException {
+        logger.debug("Required Json Param: uuid, secret, record_id");
         ConfirmRequest.Builder builder = ConfirmRequest.newBuilder();
         String str = new String(bytes, StandardCharsets.UTF_8).toLowerCase();
         logger.debug(str);
